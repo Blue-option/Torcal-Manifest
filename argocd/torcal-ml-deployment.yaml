@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
       - name: torcal-ml
-        image: europe-southwest1-docker.pkg.dev/despliegue-458304/torcal-ml/torcal-ml-localhost@sha256:d06959d21da3ce85652b0426a63b436230b8f6601a7961c00f37dab41d988dc0
+        image: europe-southwest1-docker.pkg.dev/despliegue-458304/torcal-ml/torcal-ml-localhost@sha256:750d97739d538e6cfecdc26ad5a69483ee167bdfed1b7e5def5bd424fc763e9f
         resources:
           limits:
             memory: "6Gi"
