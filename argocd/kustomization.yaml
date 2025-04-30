@@ -2,14 +2,14 @@ apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 resources:
   - namespace.yaml
-  - postgres/deployment.yaml
-  - postgres/service.yaml
-  - postgres/secret.yaml
-  - postgres/pvc.yaml
-  - neo4j/deployment.yaml
-  - neo4j/service.yaml
-  - neo4j/configmap.yaml
-  - neo4j/pvc.yaml
-  - torcal-ml/deployment.yaml
-  - torcal-ml/service.yaml
-  - torcal-ml/configmap.yaml
+  - postgre-deployment.yaml
+  - postgre-service.yaml
+  - postgre-secret.yaml
+  - postgre-pvc.yaml
+  - neo4j-deployment.yaml
+  - neo4j-service.yaml
+  - neo4j-configmap.yaml
+  - neo4j-pvc.yaml
+  - torcal-ml-deployment.yaml
+  - torcal-ml-service.yaml
+  - torcal-ml-configmap.yaml
