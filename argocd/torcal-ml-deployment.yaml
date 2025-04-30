@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
       - name: torcal-ml
-        image: isaacam/torcal-ml-localhost:latest
+        image: isaacam/torcal-ml:latest
         resources:
           limits:
             memory: "6Gi"
