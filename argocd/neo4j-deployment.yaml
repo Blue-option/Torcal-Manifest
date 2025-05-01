@@ -32,19 +32,29 @@ spec:
         env:
         - name: NEO4J_AUTH
           value: neo4j/password123
+        # Añadir estas configuraciones para resolver los problemas
+        - name: NEO4J_server_config_strict__validation_enabled
+          value: "false"
+        - name: NEO4J_dbms_directories_mode
+          value: "777"
+        # Protegerse contra las variables de entorno automáticas de Kubernetes
+        - name: NEO4J_dbms_connector_bolt_listen__address
+          value: "0.0.0.0:7687"
+        - name: NEO4J_dbms_connector_http_listen__address
+          value: "0.0.0.0:7474"
         envFrom:
         - configMapRef:
             name: neo4j-config
         volumeMounts:
         - name: neo4j-data
           mountPath: /data
-          subPath: data-dir  # Añadir subPath
+          subPath: data-dir
         - name: neo4j-logs
           mountPath: /logs
-          subPath: logs-dir  # Añadir subPath
+          subPath: logs-dir
         - name: neo4j-import
           mountPath: /var/lib/neo4j/import
-          subPath: import-dir  # Añadir subPath
+          subPath: import-dir
         - name: neo4j-plugins
           mountPath: /plugins
           subPath: plugins-dir
