@@ -1,0 +1,19 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: torcal-ml
+spec:
+  destination:
+    name: ''
+    namespace: torcal-ml
+    server: 'https://kubernetes.default.svc'
+  source:
+    path: argocd
+    repoURL: 'https://github.com/Blue-option/Torcal-Manifest'
+    targetRevision: main
+  sources: []
+  project: default
+  syncPolicy:
+    automated:
+      prune: false
+      selfHeal: false
