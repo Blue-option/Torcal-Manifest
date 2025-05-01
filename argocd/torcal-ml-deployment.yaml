@@ -20,10 +20,6 @@ spec:
         - name: env-config
           mountPath: /app/.env
           subPath: .env
-        volumes:
-        - name: env-config
-          configMap:
-            name: torcal-ml-env-config
         resources:
           limits:
             memory: "6Gi"
@@ -71,3 +67,8 @@ spec:
             port: 8000
           initialDelaySeconds: 30
           periodSeconds: 20
+      volumes:
+      - name: env-config
+        configMap:
+          name: torcal-ml-env-config
+       
