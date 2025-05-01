@@ -38,12 +38,16 @@ spec:
         volumeMounts:
         - name: neo4j-data
           mountPath: /data
+          subPath: data-dir  # Añadir subPath
         - name: neo4j-logs
           mountPath: /logs
+          subPath: logs-dir  # Añadir subPath
         - name: neo4j-import
           mountPath: /var/lib/neo4j/import
+          subPath: import-dir  # Añadir subPath
         - name: neo4j-plugins
           mountPath: /plugins
+          subPath: plugins-dir
       volumes:
       - name: neo4j-data
         persistentVolumeClaim:
