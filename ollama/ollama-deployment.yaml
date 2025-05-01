@@ -1,0 +1,35 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ollama
+  namespace: torcal-ml
+spec:
+  replicas: 0  # KEDA lo escalará
+  selector:
+    matchLabels:
+      app: ollama
+  template:
+    metadata:
+      labels:
+        app: ollama
+    spec:
+      containers:
+      - name: ollama
+        image: ollama/ollama:latest
+        ports:
+        - containerPort: 11434
+        resources:
+          limits:
+            nvidia.com/gpu: 1
+            memory: "8Gi"
+            cpu: "2000m"
+          requests:
+            memory: "4Gi"
+            cpu: "1000m"
+      nodeSelector:
+        gpu: "true"  # Debe coincidir con las etiquetas de tu node pool
+      tolerations:
+      - key: "cloud.google.com/gke-accelerator"
+        operator: "Equal"
+        value: "present"
+        effect: "NO_SCHEDULE"
