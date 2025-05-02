@@ -16,3 +16,4 @@ resources:
   - ollama/ollama-deployment.yaml
   - ollama/ollama-service.yaml
   - ollama/ollama-pvc.yaml
+  - keda-scaler/ollama-scaler.yaml
