@@ -1,3 +1,4 @@
+# keda-scaledobj.yaml
 apiVersion: keda.sh/v1alpha1
 kind: ScaledObject
 metadata:
@@ -5,10 +6,12 @@ metadata:
   namespace: torcal-ml
 spec:
   scaleTargetRef:
-    name: ollama      # Cambiado para que coincida con el nombre real del deployment
-    kind: Deployment  # Añadido el tipo de recurso
+    name: ollama
+    kind: Deployment
   minReplicaCount: 0
   maxReplicaCount: 1
+  pollingInterval: 30
+  cooldownPeriod: 300
   triggers:
   - type: kafka
     metadata:

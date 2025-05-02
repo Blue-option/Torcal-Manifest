@@ -19,3 +19,4 @@ resources:
   - keda-scaler/ollama-scaler.yaml
   - kafka/kafka-deployment.yaml
   - kafka/kafka-service.yaml
+  - kafka/topic.yaml

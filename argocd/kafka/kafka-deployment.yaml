@@ -1,32 +1,33 @@
-# kafka-deployment.yaml
+# redpanda.yaml
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: kafka
+  name: redpanda
   namespace: torcal-ml
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: kafka
+      app: redpanda
   template:
     metadata:
       labels:
-        app: kafka
+        app: redpanda
     spec:
       containers:
-      - name: kafka
-        image: confluentinc/cp-kafka:latest
+      - name: redpanda
+        image: redpandadata/redpanda:latest
+        command:
+        - redpanda
+        - start
+        - --smp=1
+        - --memory=1G
+        - --reserve-memory=0M
+        - --overprovisioned
+        - --node-id=0
+        - --check=false
+        - --kafka-addr=PLAINTEXT://0.0.0.0:9092
+        - --advertise-kafka-addr=PLAINTEXT://torcal-ml-service:9092
         ports:
         - containerPort: 9092
-        env:
-        - name: KAFKA_BROKER_ID
-          value: "1"
-        - name: KAFKA_ZOOKEEPER_CONNECT
-          value: "zookeeper:2181"
-        - name: KAFKA_ADVERTISED_LISTENERS
-          value: "PLAINTEXT://torcal-ml-service:9092"
-        - name: KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR
-          value: "1"
-        - name: KAFKA_AUTO_CREATE_TOPICS_ENABLE
-          value: "true"
+---

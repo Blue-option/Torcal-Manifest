@@ -1,0 +1,19 @@
+# create-topic.yaml
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: create-kafka-topic
+  namespace: torcal-ml
+spec:
+  template:
+    spec:
+      containers:
+      - name: rpk
+        image: redpandadata/redpanda:latest
+        command:
+        - sh
+        - -c
+        - |
+          rpk topic create gpu-trigger --brokers=torcal-ml-service:9092 || echo "Topic may already exist"
+      restartPolicy: Never
+  backoffLimit: 3
