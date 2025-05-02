@@ -15,16 +15,32 @@ spec:
     spec:
       containers:
       - name: redpanda
-        image: redpandadata/redpanda:v22.3.5
+        image: redpandadata/redpanda:latest
+        # En lugar de pasar argumentos complejos, usemos la configuración por defecto
         command:
-        - redpanda
-        - start
-        - --smp=1
-        - --memory=1G
-        - --reserve-memory=0M
-        - --overprovisioned
-        - --node-id=0
-        - --kafka-addr=PLAINTEXT://0.0.0.0:9092
-        - --advertise-kafka-addr=PLAINTEXT://torcal-ml-service:9092
+        - /bin/bash
+        - -c
+        - |
+          mkdir -p /etc/redpanda
+          cat > /etc/redpanda/redpanda.yaml << EOF
+          redpanda:
+            data_directory: /var/lib/redpanda/data
+            seed_servers: []
+            rpc_server:
+              address: 0.0.0.0
+              port: 33145
+            kafka_api:
+              - address: 0.0.0.0
+                port: 9092
+                advertised_address: torcal-ml-service
+          EOF
+          redpanda start --config /etc/redpanda/redpanda.yaml
         ports:
         - containerPort: 9092
+          name: kafka
+        volumeMounts:
+        - name: redpanda-data
+          mountPath: /var/lib/redpanda/data
+      volumes:
+      - name: redpanda-data
+        emptyDir: {}
