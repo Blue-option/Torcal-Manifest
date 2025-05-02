@@ -5,7 +5,8 @@ metadata:
   namespace: torcal-ml
 spec:
   scaleTargetRef:
-    name: ollama-gpu
+    name: ollama      # Cambiado para que coincida con el nombre real del deployment
+    kind: Deployment  # Añadido el tipo de recurso
   minReplicaCount: 0
   maxReplicaCount: 1
   triggers:
