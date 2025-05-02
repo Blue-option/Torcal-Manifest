@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
       - name: torcal-ml
-        image: europe-southwest1-docker.pkg.dev/despliegue-458304/torcal-ml/torcal-ml-localhost@sha256:f173ae51e4505a45a3958d6e8b3b104ae131063e6bfef9cd60602fdd2eea951e
+        image: europe-southwest1-docker.pkg.dev/despliegue-458304/torcal-ml/torcal-ml-localhost@sha256:dfb437aba514a76ac29e70c4bf85cce5068155f5a455510e2211e4d10abde9ac
 
         volumeMounts:
         - name: env-config
