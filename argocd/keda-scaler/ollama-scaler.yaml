@@ -9,10 +9,13 @@ spec:
     kind: Deployment
   minReplicaCount: 0
   maxReplicaCount: 1
+  pollingInterval: 60        # Aumentado a 60 segundos
+  cooldownPeriod: 600        # Aumentado a 10 minutos
   triggers:
   - type: kafka
     metadata:
       bootstrapServers: kafka.kafka-system.svc.cluster.local:9092
-      consumerGroup: ollama-consumer-group
+      consumerGroup: ollama-consumer-group-unique  # Cambiado para evitar mensajes antiguos
       topic: torcal-ml-gpu-trigger
-      lagThreshold: "1"
+      lagThreshold: "5"      # Aumentado para requerir más mensajes
+      offsetResetPolicy: latest  # Solo considerar mensajes nuevos
