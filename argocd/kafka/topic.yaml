@@ -1,4 +1,3 @@
-# create-topic.yaml
 apiVersion: batch/v1
 kind: Job
 metadata:
@@ -8,12 +7,17 @@ spec:
   template:
     spec:
       containers:
-      - name: rpk
-        image: redpandadata/redpanda:latest
-        command:
-        - sh
-        - -c
+      - name: kafka-client
+        image: bitnami/kafka:latest
+        command: 
+        - "/bin/bash"
+        - "-c"
         - |
-          rpk topic create gpu-trigger --brokers=torcal-ml-service:9092 || echo "Topic may already exist"
+          echo "Waiting for Kafka to be fully available..."
+          sleep 20
+          echo "Creating topic torcal-ml-gpu-trigger with 3 partitions..."
+          kafka-topics.sh --bootstrap-server kafka.kafka-system.svc.cluster.local:9092 --create --if-not-exists --topic torcal-ml-gpu-trigger --partitions 3 --replication-factor 1
+          echo "Verifying topic creation..."
+          kafka-topics.sh --bootstrap-server kafka.kafka-system.svc.cluster.local:9092 --describe --topic torcal-ml-gpu-trigger
       restartPolicy: Never
   backoffLimit: 3

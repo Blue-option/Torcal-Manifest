@@ -9,12 +9,10 @@ spec:
     kind: Deployment
   minReplicaCount: 0
   maxReplicaCount: 1
-  pollingInterval: 30
-  cooldownPeriod: 300
   triggers:
   - type: kafka
     metadata:
       bootstrapServers: kafka.kafka-system.svc.cluster.local:9092
       consumerGroup: ollama-consumer-group
-      topic: torcal-ml-gpu-trigger  # Nota el prefijo torcal-ml que defines en tu app
+      topic: torcal-ml-gpu-trigger
       lagThreshold: "1"
