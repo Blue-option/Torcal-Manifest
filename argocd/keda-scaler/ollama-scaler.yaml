@@ -1,4 +1,3 @@
-# keda-scaledobj.yaml
 apiVersion: keda.sh/v1alpha1
 kind: ScaledObject
 metadata:
@@ -15,7 +14,7 @@ spec:
   triggers:
   - type: kafka
     metadata:
-      bootstrapServers: torcal-ml-service:9092
+      bootstrapServers: kafka.kafka-system.svc.cluster.local:9092
       consumerGroup: ollama-consumer-group
-      topic: gpu-trigger
+      topic: torcal-ml-gpu-trigger  # Nota el prefijo torcal-ml que defines en tu app
       lagThreshold: "1"

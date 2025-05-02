@@ -5,7 +5,7 @@ metadata:
   namespace: torcal-ml
 spec:
   selector:
-    app: redpanda
+    app: kafka
   ports:
   - port: 9092
     targetPort: 9092
