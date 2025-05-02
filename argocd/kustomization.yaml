@@ -17,6 +17,6 @@ resources:
   - ollama/ollama-service.yaml
   - ollama/ollama-pvc.yaml
   - keda-scaler/ollama-scaler.yaml
-  - kafka/kafka-deployment.yaml
-  - kafka/kafka-service.yaml
-  - kafka/topic.yaml
+  - redpanda/redpanda-deployment.yaml
+  - redpanda/redpanda-service.yaml
+  - redpanda/topic.yaml
