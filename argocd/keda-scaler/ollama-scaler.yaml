@@ -1,0 +1,19 @@
+apiVersion: keda.sh/v1alpha1
+kind: ScaledObject
+metadata:
+  name: ollama-scaler
+  namespace: torcal-ml
+spec:
+  scaleTargetRef:
+    name: ollama
+  minReplicaCount: 0
+  maxReplicaCount: 1
+  pollingInterval: 30
+  cooldownPeriod: 300
+  triggers:
+  - type: kubernetes-workload
+    metadata:
+      workloadName: torcal-ml-training
+      namespace: torcal-ml
+      podSelector: "app=torcal-ml-training"
+      value: "1"
