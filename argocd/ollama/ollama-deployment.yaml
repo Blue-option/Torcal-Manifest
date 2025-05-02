@@ -32,4 +32,4 @@ spec:
       - key: "cloud.google.com/gke-accelerator"
         operator: "Equal"
         value: "present"
-        effect: "NO_SCHEDULE"
+        effect: "NoSchedule"
