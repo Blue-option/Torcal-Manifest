@@ -5,15 +5,13 @@ metadata:
   namespace: torcal-ml
 spec:
   scaleTargetRef:
-    name: ollama
+    name: ollama-gpu
   minReplicaCount: 0
   maxReplicaCount: 1
-  pollingInterval: 30
-  cooldownPeriod: 300
   triggers:
-  - type: kubernetes-workload
+  - type: kafka
     metadata:
-      workloadName: torcal-ml-training
-      namespace: torcal-ml
-      podSelector: "app=torcal-ml-training"
-      value: "1"
+      bootstrapServers: torcal-ml-service:9092
+      consumerGroup: ollama-consumer-group
+      topic: gpu-trigger
+      lagThreshold: "1"
