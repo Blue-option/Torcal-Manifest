@@ -1,0 +1,37 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: kafka-message-monitor
+  namespace: torcal-ml
+spec:
+  template:
+    spec:
+      containers:
+      - name: kafka-client
+        image: bitnami/kafka:latest
+        command:
+        - "/bin/bash"
+        - "-c"
+        - |
+          echo "========================================"
+          echo "MONITORING KAFKA TOPIC: torcal-ml-gpu-trigger"
+          echo "========================================"
+          echo "Starting at $(date)"
+          echo "Waiting for messages... (will run for 10 minutes)"
+          
+          kafka-console-consumer.sh --bootstrap-server kafka.kafka-system.svc.cluster.local:9092 \
+            --topic torcal-ml-gpu-trigger \
+            --from-beginning \
+            --timeout-ms 600000 > /tmp/messages.txt
+          
+          echo "========================================"
+          echo "Messages received:"
+          cat /tmp/messages.txt
+          echo "========================================"
+          echo "Found $(grep -c . /tmp/messages.txt) messages in topic"
+          echo "Job completed at $(date)"
+          
+          # Keep the pod around for inspection
+          sleep 3600
+      restartPolicy: Never
+  backoffLimit: 1

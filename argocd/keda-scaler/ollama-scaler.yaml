@@ -14,5 +14,5 @@ spec:
     metadata:
       bootstrapServers: kafka.kafka-system.svc.cluster.local:9092
       consumerGroup: ollama-consumer-group
-      topic: torcal-ml-gpu-trigger
+      topic: torcal-gpu-trigger
       lagThreshold: "1"
