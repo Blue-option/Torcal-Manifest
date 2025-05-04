@@ -12,7 +12,7 @@ data:
     DATABASE_URL=postgresql://torcaluser:O56b0b>t/r9aC0I,/Y@postgres:5432/torcal
     OLLAMA_URL=http://ollama:11434
     KAFKA_BOOTSTRAP_SERVERS=kafka.kafka-system.svc.cluster.local:9092 \
-    KAFKA_TOPIC_PREFIX=torcal-ml-
+    KAFKA_TOPIC_PREFIX=torcal-
     
     # Tokens para endpoints de Database Testing
     TOKEN_DB_TEST_NEO4J=B1OyOhL3X7ixkJAOwWzpUT
