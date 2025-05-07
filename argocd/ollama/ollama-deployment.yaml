@@ -28,7 +28,6 @@ spec:
             cpu: "4000m"
       nodeSelector:
         gpu : "true"
-        high-compute: "true"  # Debe coincidir con las etiquetas de tu node pool
       tolerations:
       - key: "cloud.google.com/gke-accelerator"
         operator: "Equal"
