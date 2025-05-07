@@ -15,21 +15,24 @@ spec:
     spec:
       containers:
       - name: ollama
-        image: ollama/ollama:latest
+        image: europe-southwest1-docker.pkg.dev/despliegue-458304/ollama-torcal/ollama-torcal@sha256:bf0ccb75f23a59197370021920761ebf9911aa5f70eca54d1ff1b6be658c7d96
         ports:
         - containerPort: 11434
         resources:
           limits:
-            nvidia.com/gpu: 1
-            memory: "8Gi"
-            cpu: "2000m"
+            #nvidia.com/gpu: 1
+            memory: "10Gi"
+            cpu: "6000m"
           requests:
-            memory: "4Gi"
-            cpu: "1000m"
+            memory: "6Gi"
+            cpu: "4000m"
       nodeSelector:
-        gpu: "true"  # Debe coincidir con las etiquetas de tu node pool
+        gpu : "true"
+        high-compute: "true"  # Debe coincidir con las etiquetas de tu node pool
       tolerations:
       - key: "cloud.google.com/gke-accelerator"
         operator: "Equal"
         value: "present"
         effect: "NoSchedule"
+
+
