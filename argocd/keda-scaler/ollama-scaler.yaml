@@ -7,7 +7,7 @@ spec:
   scaleTargetRef:
     name: ollama
     kind: Deployment
-  minReplicaCount: 0
+  minReplicaCount: 1
   maxReplicaCount: 1
   cooldownPeriod: 300  # 5 minutos antes de escalar a 0
   advanced:
