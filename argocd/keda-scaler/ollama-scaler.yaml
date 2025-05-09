@@ -9,6 +9,12 @@ spec:
     kind: Deployment
   minReplicaCount: 0
   maxReplicaCount: 1
+  cooldownPeriod: 300  # 5 minutos antes de escalar a 0
+  advanced:
+    horizontalPodAutoscalerConfig:
+      behavior:
+        scaleDown:
+          stabilizationWindowSeconds: 300
   triggers:
   - type: kafka
     metadata:
