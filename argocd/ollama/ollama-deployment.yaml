@@ -30,10 +30,6 @@ spec:
         gpu : "true"
         cloud.google.com/gke-accelerator: nvidia-l4
       tolerations:
-      - key: "cloud.google.com/gke-accelerator"
-        operator: "Equal"
-        value: "present"
-        effect: "NoSchedule"
       - key: "nvidia.com/gpu"  
         operator: "Equal"
         value: "present"
