@@ -28,7 +28,7 @@ spec:
             cpu: "2000m"
       nodeSelector:
         gpu : "true"
-        cloud.google.com/gke-accelerator: nvidia-tesla-t4
+        cloud.google.com/gke-accelerator: nvidia-l4
       tolerations:
       - key: "nvidia.com/gpu"  
         operator: "Equal"
