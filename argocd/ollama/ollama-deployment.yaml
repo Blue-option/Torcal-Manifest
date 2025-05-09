@@ -4,7 +4,7 @@ metadata:
   name: ollama
   namespace: torcal-ml
 spec:
-  replicas: 0  # KEDA lo escalará
+  replicas: 1 # KEDA lo escalará
   selector:
     matchLabels:
       app: ollama
