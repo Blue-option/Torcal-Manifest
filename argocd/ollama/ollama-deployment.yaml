@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
       - name: ollama
-        image: ollama/ollama:latest
+        image: europe-southwest1-docker.pkg.dev/despliegue-458304/ollama-torcal/ollama-torcal@sha256:bf0ccb75f23a59197370021920761ebf9911aa5f70eca54d1ff1b6be658c7d96
         ports:
         - containerPort: 11434
         resources:
