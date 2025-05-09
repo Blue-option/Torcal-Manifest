@@ -34,5 +34,9 @@ spec:
         operator: "Equal"
         value: "present"
         effect: "NoSchedule"
+      - key: "cloud.google.com/gke-accelerator"
+        operator: "Equal"
+        value: "present"
+        effect: "NoSchedule"
 
 
