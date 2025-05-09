@@ -16,6 +16,8 @@ spec:
       containers:
       - name: ollama
         image: ollama/ollama:latest
+        ports:
+        - containerPort: 11434
         resources:
           limits:
             nvidia.com/gpu: 1
@@ -36,5 +38,5 @@ spec:
         operator: "Equal"
         value: "present"
         effect: "NoSchedule"
-        volumes:
-     
+
+
