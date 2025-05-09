@@ -4,7 +4,7 @@ metadata:
   name: ollama
   namespace: torcal-ml
 spec:
-  replicas: 1 # KEDA lo escalará
+  replicas: 0  # KEDA lo escalará desde 0
   selector:
     matchLabels:
       app: ollama
@@ -13,11 +13,47 @@ spec:
       labels:
         app: ollama
     spec:
+      initContainers:
+      - name: model-loader
+        image: ollama/ollama:latest
+        command: ["/bin/bash", "-c"]
+        args:
+          - |
+            mkdir -p /root/.ollama
+            ollama serve &
+            SERVER_PID=$!
+            
+            echo "Esperando a que Ollama inicie..."
+            until curl -s http://localhost:11434/api/tags > /dev/null 2>&1; do
+              sleep 2
+              echo "."
+            done
+            
+            echo "Descargando gemma3:4b..."
+            ollama pull gemma3:4b
+            
+            kill $SERVER_PID
+            wait $SERVER_PID
+        volumeMounts:
+        - name: ollama-models
+          mountPath: /root/.ollama
+        resources:
+          limits:
+            memory: "8Gi"
+            cpu: "2000m"
+          requests:
+            memory: "4Gi"
+            cpu: "1000m"
       containers:
       - name: ollama
-        image: europe-southwest1-docker.pkg.dev/despliegue-458304/ollama-torcal/ollama-torcal@sha256:bf0ccb75f23a59197370021920761ebf9911aa5f70eca54d1ff1b6be658c7d96
+        image: ollama/ollama:latest
         ports:
         - containerPort: 11434
+        env:
+        - name: NVIDIA_VISIBLE_DEVICES
+          value: "all"
+        - name: NVIDIA_DRIVER_CAPABILITIES
+          value: "compute,utility"
         resources:
           limits:
             nvidia.com/gpu: 1
@@ -26,17 +62,23 @@ spec:
           requests:
             memory: "4Gi"
             cpu: "2000m"
+        volumeMounts:
+        - name: ollama-models
+          mountPath: /root/.ollama
+        readinessProbe:
+          httpGet:
+            path: /api/tags
+            port: 11434
+          initialDelaySeconds: 10
+          periodSeconds: 5
       nodeSelector:
-        gpu : "true"
         cloud.google.com/gke-accelerator: nvidia-l4
       tolerations:
-      - key: "nvidia.com/gpu"  
-        operator: "Equal"
-        value: "present"
-        effect: "NoSchedule"
       - key: "cloud.google.com/gke-accelerator"
         operator: "Equal"
         value: "present"
         effect: "NoSchedule"
-
-
+      volumes:
+      - name: ollama-models
+        persistentVolumeClaim:
+          claimName: ollama-pvc
