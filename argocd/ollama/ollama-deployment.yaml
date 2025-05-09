@@ -37,8 +37,4 @@ spec:
         value: "present"
         effect: "NoSchedule"
         volumes:
-      - name: ollama-models
-        persistentVolumeClaim:
-          claimName: ollama-pvc
-
-
+     
