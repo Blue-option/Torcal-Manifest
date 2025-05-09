@@ -20,7 +20,7 @@ spec:
         - containerPort: 11434
         resources:
           limits:
-            #nvidia.com/gpu: 1
+            nvidia.com/gpu: 1
             memory: "8Gi"
             cpu: "3500m"
           requests:
