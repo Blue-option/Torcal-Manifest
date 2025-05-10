@@ -25,18 +25,12 @@ spec:
             # Iniciar Ollama en background
             ollama serve &
             # Esperar a que el servicio esté disponible
-            while ! curl -s http://localhost:11434/api/version > /dev/null; do
-              echo "Esperando a que Ollama esté disponible..."
-              sleep 2
-            done
-            # Descargar el modelo gemma3:4b si no existe
-            echo "Verificando modelo gemma3:4b..."
-            if ! ollama list | grep -q "gemma3:4b"; then
-              echo "Descargando gemma3:4b..."
-              ollama pull gemma3:4b
-            else
-              echo "Modelo gemma3:4b ya está disponible."
-            fi
+            echo "Esperando a que Ollama esté disponible..."
+            sleep 10
+            # Intentar descargar el modelo gemma3:4b
+            echo "Descargando modelo gemma3:4b..."
+            ollama pull gemma3:4b
+            echo "Modelo gemma3:4b descargado y listo."
             # Mantener el contenedor ejecutándose
             wait
         resources:
