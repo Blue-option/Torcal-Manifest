@@ -30,6 +30,7 @@ spec:
             # Intentar descargar el modelo gemma3:4b
             echo "Descargando modelo gemma3:4b..."
             ollama pull gemma3:4b
+            ollama pull bge-m3
             echo "Modelo gemma3:4b descargado y listo."
             # Mantener el contenedor ejecutándose
             wait
