@@ -4,7 +4,7 @@ metadata:
   name: vllm-gemma
   namespace: torcal-ml
 spec:
-  replicas: 1  # KEDA lo escalará
+  replicas: 1 # KEDA lo escalará
   selector:
     matchLabels:
       app: vllm-gemma
@@ -23,16 +23,13 @@ spec:
           - "0.0.0.0"
           - "--port"
           - "8000"
-          - "--quantization"
-          - "awq"  # Cuantización AWQ para mejor rendimiento
           - "--dtype"
           - "float16"
           - "--gpu-memory-utilization"
           - "0.9"
           - "--max-model-len"
           - "8192"
-          - "--enable-lora"
-          - "false"
+          - "--no-enable-lora"  # Cambiado de "--enable-lora false"
           - "--max-num-seqs"
           - "32"
         ports:
@@ -44,7 +41,7 @@ spec:
         resources:
           limits:
             nvidia.com/gpu: 1
-            memory: "12Gi"  # Reducido por la cuantización
+            memory: "12Gi"
             cpu: "8"
           requests:
             memory: "8Gi"
