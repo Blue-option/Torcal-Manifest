@@ -10,7 +10,7 @@ data:
     NEO4J_USER=neo4j
     NEO4J_PASSWORD=password123
     DATABASE_URL=postgresql://torcaluser:O56b0b>t/r9aC0I,/Y@postgres:5432/torcal
-    OLLAMA_URL=ollama.torcal-ml.svc.cluster.local:11434
+    OLLAMA_URL=:http//ollama.torcal-ml.svc.cluster.local:11434
 
     KAFKA_BOOTSTRAP_SERVERS=kafka.kafka-system.svc.cluster.local:9092
     KAFKA_TOPIC_PREFIX=torcal-
