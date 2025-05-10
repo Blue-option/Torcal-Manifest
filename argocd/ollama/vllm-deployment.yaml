@@ -82,36 +82,9 @@ spec:
           medium: Memory
           sizeLimit: "2Gi"
 ---
-apiVersion: v1
-kind: Service
-metadata:
-  name: vllm-service
-  namespace: torcal-ml
-spec:
-  selector:
-    app: vllm-gemma
-  ports:
-  - port: 80
-    targetPort: 8000
-    name: http
-  type: ClusterIP
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: vllm-service
-  namespace: torcal-ml
-spec:
-  selector:
-    app: vllm-gemma
-  ports:
-  - port: 80
-    targetPort: 8000
-    name: http
-  type: ClusterIP
-  
----
 
+
+  
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
