@@ -4,7 +4,7 @@ metadata:
   name: vllm-gemma
   namespace: torcal-ml
 spec:
-  replicas: 1 # KEDA lo escalará
+  replicas: 0  # KEDA lo escalará
   selector:
     matchLabels:
       app: vllm-gemma
@@ -18,7 +18,7 @@ spec:
         image: vllm/vllm-openai:latest
         args:
           - "--model"
-          - "google/gemma-2b"
+          - "google/gemma-3-4b-it"  # Versión instruction-tuned
           - "--host"
           - "0.0.0.0"
           - "--port"
@@ -29,15 +29,22 @@ spec:
           - "0.9"
           - "--max-model-len"
           - "8192"
-          - "--no-enable-lora"  # Cambiado de "--enable-lora false"
-          - "--max-num-seqs"
-          - "32"
+          - "--hf-token"
+          - "$(HF_TOKEN)"
         ports:
         - containerPort: 8000
           name: http
         env:
-        - name: CUDA_VISIBLE_DEVICES
-          value: "0"
+        - name: HF_TOKEN
+          valueFrom:
+            secretKeyRef:
+              name: huggingface-token
+              key: token
+        - name: HUGGING_FACE_HUB_TOKEN
+          valueFrom:
+            secretKeyRef:
+              name: huggingface-token
+              key: token
         resources:
           limits:
             nvidia.com/gpu: 1
@@ -46,23 +53,9 @@ spec:
           requests:
             memory: "8Gi"
             cpu: "4"
-        readinessProbe:
-          httpGet:
-            path: /health
-            port: http
-          initialDelaySeconds: 30
-          periodSeconds: 10
-        livenessProbe:
-          httpGet:
-            path: /health
-            port: http
-          initialDelaySeconds: 60
-          periodSeconds: 30
         volumeMounts:
         - name: cache
           mountPath: /root/.cache/huggingface
-        - name: shm
-          mountPath: /dev/shm
       nodeSelector:
         cloud.google.com/gke-accelerator: nvidia-l4
       tolerations:
@@ -74,13 +67,8 @@ spec:
       - name: cache
         persistentVolumeClaim:
           claimName: vllm-cache-pvc
-      - name: shm
-        emptyDir:
-          medium: Memory
-          sizeLimit: "2Gi"
+
 ---
-
-
   
 apiVersion: v1
 kind: PersistentVolumeClaim

@@ -4,7 +4,7 @@ metadata:
   name: ollama
   namespace: torcal-ml
 spec:
-  replicas: 0 # KEDA lo escalará
+  replicas: 1 # KEDA lo escalará
   selector:
     matchLabels:
       app: ollama
@@ -18,6 +18,27 @@ spec:
         image: ollama/ollama:latest
         ports:
         - containerPort: 11434
+        command: ["/bin/sh"]
+        args: 
+          - "-c"
+          - |
+            # Iniciar Ollama en background
+            ollama serve &
+            # Esperar a que el servicio esté disponible
+            while ! curl -s http://localhost:11434/api/version > /dev/null; do
+              echo "Esperando a que Ollama esté disponible..."
+              sleep 2
+            done
+            # Descargar el modelo gemma3:4b si no existe
+            echo "Verificando modelo gemma3:4b..."
+            if ! ollama list | grep -q "gemma3:4b"; then
+              echo "Descargando gemma3:4b..."
+              ollama pull gemma3:4b
+            else
+              echo "Modelo gemma3:4b ya está disponible."
+            fi
+            # Mantener el contenedor ejecutándose
+            wait
         resources:
           limits:
             nvidia.com/gpu: 0
@@ -27,10 +48,10 @@ spec:
             memory: "4Gi"
             cpu: "2000m"
       nodeSelector:
-        gpu : "true"
+        gpu: "true"
         cloud.google.com/gke-accelerator: nvidia-l4
       tolerations:
-      - key: "nvidia.com/gpu"  
+      - key: "nvidia.com/gpu"
         operator: "Equal"
         value: "present"
         effect: "NoSchedule"
@@ -38,5 +59,3 @@ spec:
         operator: "Equal"
         value: "present"
         effect: "NoSchedule"
-
-
