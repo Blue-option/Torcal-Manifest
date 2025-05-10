@@ -16,6 +16,21 @@ spec:
       containers:
       - name: ollama
         image: ollama/ollama:latest
+        env:
+        - name: OLLAMA_NUM_PARALLEL
+          value: "1"  # Reducir a 1 para evitar contención
+        - name: OLLAMA_MAX_LOADED_MODELS
+          value: "1"  # Cargar solo 1 modelo a la vez
+        - name: OLLAMA_KEEP_ALIVE
+          value: "30m"  # Mantener modelo en memoria más tiempo
+        - name: OLLAMA_GPU_OVERHEAD
+          value: "0"  # Sin overhead de GPU
+        - name: OLLAMA_NUM_GPU
+          value: "1"
+        - name: OLLAMA_FLASH_ATTENTION
+          value: "true"  # Usar Flash Attention si está disponible
+        - name: CUDA_VISIBLE_DEVICES
+          value: "0"
         ports:
         - containerPort: 11434
         command: ["/bin/sh"]
