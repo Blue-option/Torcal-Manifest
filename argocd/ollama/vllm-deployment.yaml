@@ -1,0 +1,107 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: vllm-gemma
+  namespace: torcal-ml
+spec:
+  replicas: 1  # KEDA lo manejará
+  selector:
+    matchLabels:
+      app: vllm-gemma
+  template:
+    metadata:
+      labels:
+        app: vllm-gemma
+    spec:
+      containers:
+      - name: vllm
+        image: vllm/vllm-openai:latest
+        args:
+          - "--model"
+          - "google/gemma-7b"  # o "google/gemma-2b" para versión más ligera
+          - "--host"
+          - "0.0.0.0"
+          - "--port"
+          - "8000"
+          - "--gpu-memory-utilization"
+          - "0.9"
+          - "--max-model-len"
+          - "8192"
+          - "--dtype"
+          - "auto"  # Usa FP16 automáticamente si es posible
+          - "--trust-remote-code"
+        env:
+        - name: HUGGING_FACE_HUB_TOKEN
+          valueFrom:
+            secretKeyRef:
+              name: huggingface-token
+              key: token
+              optional: true
+        - name: CUDA_VISIBLE_DEVICES
+          value: "0"
+        ports:
+        - containerPort: 8000
+          name: http
+        resources:
+          limits:
+            nvidia.com/gpu: 1
+            memory: "24Gi"  # Gemma-7b necesita más memoria
+            cpu: "8"
+          requests:
+            memory: "16Gi"
+            cpu: "4"
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: http
+          initialDelaySeconds: 30
+          periodSeconds: 10
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: http
+          initialDelaySeconds: 60
+          periodSeconds: 30
+        volumeMounts:
+        - name: cache
+          mountPath: /root/.cache/huggingface
+      nodeSelector:
+        cloud.google.com/gke-accelerator: nvidia-l4
+      tolerations:
+      - key: "cloud.google.com/gke-accelerator"
+        operator: "Equal"
+        value: "present"
+        effect: "NoSchedule"
+      volumes:
+      - name: cache
+        persistentVolumeClaim:
+          claimName: vllm-cache-pvc
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: vllm-service
+  namespace: torcal-ml
+spec:
+  selector:
+    app: vllm-gemma
+  ports:
+  - port: 80
+    targetPort: 8000
+    name: http
+  type: ClusterIP
+  
+---
+
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: vllm-cache-pvc
+  namespace: torcal-ml
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 50Gi  # Suficiente para cachear el modelo
+  storageClassName: standard

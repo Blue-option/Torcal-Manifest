@@ -20,3 +20,4 @@ resources:
   - kafka/kafka-deployment.yaml
   - kafka/kafka-service.yaml
   - kafka/kafka-redirect.yaml
+  - ollama/vllm-deployment.yaml
