@@ -4,7 +4,7 @@ metadata:
   name: vllm-gemma
   namespace: torcal-ml
 spec:
-  replicas: 1  # KEDA lo manejará
+  replicas: 0  # KEDA lo escalará
   selector:
     matchLabels:
       app: vllm-gemma
@@ -18,37 +18,36 @@ spec:
         image: vllm/vllm-openai:latest
         args:
           - "--model"
-          - "google/gemma-7b"  # o "google/gemma-2b" para versión más ligera
+          - "google/gemma-2b"
           - "--host"
           - "0.0.0.0"
           - "--port"
           - "8000"
+          - "--quantization"
+          - "awq"  # Cuantización AWQ para mejor rendimiento
+          - "--dtype"
+          - "float16"
           - "--gpu-memory-utilization"
           - "0.9"
           - "--max-model-len"
           - "8192"
-          - "--dtype"
-          - "auto"  # Usa FP16 automáticamente si es posible
-          - "--trust-remote-code"
-        env:
-        - name: HUGGING_FACE_HUB_TOKEN
-          valueFrom:
-            secretKeyRef:
-              name: huggingface-token
-              key: token
-              optional: true
-        - name: CUDA_VISIBLE_DEVICES
-          value: "0"
+          - "--enable-lora"
+          - "false"
+          - "--max-num-seqs"
+          - "32"
         ports:
         - containerPort: 8000
           name: http
+        env:
+        - name: CUDA_VISIBLE_DEVICES
+          value: "0"
         resources:
           limits:
             nvidia.com/gpu: 1
-            memory: "24Gi"  # Gemma-7b necesita más memoria
+            memory: "12Gi"  # Reducido por la cuantización
             cpu: "8"
           requests:
-            memory: "16Gi"
+            memory: "8Gi"
             cpu: "4"
         readinessProbe:
           httpGet:
@@ -65,6 +64,8 @@ spec:
         volumeMounts:
         - name: cache
           mountPath: /root/.cache/huggingface
+        - name: shm
+          mountPath: /dev/shm
       nodeSelector:
         cloud.google.com/gke-accelerator: nvidia-l4
       tolerations:
@@ -76,6 +77,24 @@ spec:
       - name: cache
         persistentVolumeClaim:
           claimName: vllm-cache-pvc
+      - name: shm
+        emptyDir:
+          medium: Memory
+          sizeLimit: "2Gi"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: vllm-service
+  namespace: torcal-ml
+spec:
+  selector:
+    app: vllm-gemma
+  ports:
+  - port: 80
+    targetPort: 8000
+    name: http
+  type: ClusterIP
 ---
 apiVersion: v1
 kind: Service
