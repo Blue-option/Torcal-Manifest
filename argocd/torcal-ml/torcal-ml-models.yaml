@@ -3,12 +3,11 @@ kind: PersistentVolumeClaim
 metadata:
   name: torcal-ml-models-shared
   namespace: torcal-ml
-  labels:
-    argocd.argoproj.io/instance: mi-aplicacion
 spec:
   accessModes:
     - ReadWriteMany
   resources:
     requests:
-      storage: 1Ti  # Tamaño mínimo para Filestore
-  storageClassName: standard-rwx
+      storage: 50Gi
+  volumeName: torcal-ml-models-nfs-pv
+  storageClassName: ""
