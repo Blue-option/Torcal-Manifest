@@ -1,8 +1,4 @@
-# nfs-complete-setup.yaml
----
 
- # Usa el storage class estándar de GKE
- # 1. PVC para almacenar los datos del servidor NFS
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
@@ -16,37 +12,3 @@ spec:
       storage: 50Gi
   storageClassName: standard 
 ---
-# 2. Deployment del servidor NFS
-
-# 3. Service para exponer el servidor NFS
-
----
-# 4. PersistentVolume que apunta al servidor NFS
-apiVersion: v1
-kind: PersistentVolume
-metadata:
-  name: torcal-ml-models-nfs-pv
-spec:
-  capacity:
-    storage: 50Gi
-  accessModes:
-    - ReadWriteMany
-  persistentVolumeReclaimPolicy: Retain
-  nfs:
-    server: nfs-server.torcal-ml.svc.cluster.local
-    path: /nfsshare
----
-# 5. PersistentVolumeClaim para los pods de torcal-ml
-apiVersion: v1
-kind: PersistentVolumeClaim
-metadata:
-  name: torcal-ml-models-shared
-  namespace: torcal-ml
-spec:
-  accessModes:
-    - ReadWriteMany
-  resources:
-    requests:
-      storage: 50Gi
-  volumeName: torcal-ml-models-nfs-pv
-  storageClassName: ""

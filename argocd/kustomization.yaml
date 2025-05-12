@@ -14,7 +14,10 @@ resources:
   - torcal-ml/torcal-ml-service.yaml
   - torcal-ml/torcal-ml-configmap.yaml
   - torcal-ml/torcal-ml-models.yaml
-  - torcal-ml/almacenamiento/shared-storage.yaml
+  - torcal-ml/nfs/nfs-pvc.yaml
+  - torcal-ml/nfs/nfs-pv.yaml
+  - torcal-ml/nfs/nfs-deployment.yaml
+  - torcal-ml/nfs/nfs-service.yaml
   - ollama/ollama-deployment.yaml
   - ollama/ollama-service.yaml
   - ollama/ollama-pvc.yaml
