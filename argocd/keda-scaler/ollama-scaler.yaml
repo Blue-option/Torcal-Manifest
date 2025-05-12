@@ -7,7 +7,6 @@ spec:
   scaleTargetRef:
     name: ollama
     kind: Deployment
-    apiVersion: apps/v1
   minReplicaCount: 0
   maxReplicaCount: 1
   cooldownPeriod: 1800        # 30 minutos
