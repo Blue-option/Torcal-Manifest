@@ -9,10 +9,10 @@ spec:
     kind: Deployment
   minReplicaCount: 0
   maxReplicaCount: 1
-  cooldownPeriod: 1800        # 30 minutos
+  cooldownPeriod: 7200        # 30 minutos
   pollingInterval: 60    
   advanced:
-    restoreToOriginalReplicaCount: false  # No restaurar a réplicas originales
+    restoreToOriginalReplicaCount: true  # No restaurar a réplicas originales
     horizontalPodAutoscalerConfig:
       behavior:
         scaleUp:
@@ -22,11 +22,11 @@ spec:
             value: 100
             periodSeconds: 60
         scaleDown:
-          stabilizationWindowSeconds: 1800  # 30 minutos
+          stabilizationWindowSeconds: 7200  # 30 minutos
           policies:
           - type: Percent
             value: 100
-            periodSeconds: 1800
+            periodSeconds: 7200
   triggers:
   - type: kafka
     metadata:
