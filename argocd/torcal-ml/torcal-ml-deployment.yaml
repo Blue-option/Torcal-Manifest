@@ -20,6 +20,8 @@ spec:
         - name: env-config
           mountPath: /app/.env
           subPath: .env
+        - name: shared-models
+          mountPath: /app/models
         resources:
           limits:
             memory: "6Gi"
@@ -71,4 +73,6 @@ spec:
       - name: env-config
         configMap:
           name: torcal-ml-env-config
-       
+      - name: shared-models
+        persistentVolumeClaim:
+          claimName: torcal-ml-models-shared
