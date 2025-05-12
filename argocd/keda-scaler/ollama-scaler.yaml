@@ -12,7 +12,7 @@ spec:
   cooldownPeriod: 7200        # 30 minutos
   pollingInterval: 60    
   advanced:
-    restoreToOriginalReplicaCount: true  # No restaurar a réplicas originales
+    restoreToOriginalReplicaCount: false  # No restaurar a réplicas originales
     horizontalPodAutoscalerConfig:
       behavior:
         scaleUp:
