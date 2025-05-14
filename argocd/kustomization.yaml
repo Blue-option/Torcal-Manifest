@@ -24,3 +24,5 @@ resources:
   - rbac/rolebindings.yaml
   - rbac/serviceaccounts.yaml  
   - secrets/api-tokens.yaml
+  - secrets/neo4j-secret.yaml
+  - secrets/postgres-secret.yaml
