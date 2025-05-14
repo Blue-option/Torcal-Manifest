@@ -4,7 +4,6 @@ resources:
   - namespace.yaml
   - postgres/postgres-deployment.yaml
   - postgres/postgres-service.yaml
-  - postgres/postgres-secret.yaml
   - postgres/postgres-pvc.yaml
   - neo4j/neo4j-deployment.yaml
   - neo4j/neo4j-service.yaml
