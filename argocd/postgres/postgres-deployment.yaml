@@ -14,7 +14,7 @@ spec:
       labels:
         app: postgres
     spec:
-      serviceAccountName: postgres
+      serviceAccountName: postgres-sa
       containers:
       - name: postgres
         image: postgres:15
