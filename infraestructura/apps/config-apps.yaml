@@ -9,7 +9,7 @@ spec:
   source:
     repoURL: https://github.com/Blue-option/Torcal-Manifest
     targetRevision: main
-    path: infrastructura/configs/cert-manager
+    path: infrastructure/configs/cert-manager
   destination:
     server: https://kubernetes.default.svc
     namespace: cert-manager
@@ -32,7 +32,7 @@ spec:
   source:
     repoURL: https://github.com/Blue-option/Torcal-Manifest
     targetRevision: main
-    path: infrastructura/configs/monitoring
+    path: infrastructure/configs/monitoring
   destination:
     server: https://kubernetes.default.svc
     namespace: monitoring
@@ -55,7 +55,7 @@ spec:
   source:
     repoURL: https://github.com/Blue-option/Torcal-Manifest
     targetRevision: main
-    path: infrastructura/configs/ingress
+    path: infrastructure/configs/ingress
   destination:
     server: https://kubernetes.default.svc
     namespace: ingress-nginx
@@ -100,7 +100,7 @@ spec:
   source:
     repoURL: https://github.com/Blue-option/Torcal-Manifest
     targetRevision: main
-    path: infrastructura/configs/kafka
+    path: infrastructure/configs/kafka
   destination:
     server: https://kubernetes.default.svc
     namespace: kafka-system
