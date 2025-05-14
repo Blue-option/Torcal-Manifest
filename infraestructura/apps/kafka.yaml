@@ -1,0 +1,58 @@
+
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: kafka
+  namespace: argocd
+spec:
+  project: infrastructure
+  source:
+    repoURL: https://charts.bitnami.com/bitnami
+    targetRevision: 20.1.1
+    chart: kafka
+    helm:
+      releaseName: kafka
+      values: |
+        replicaCount: 1
+        autoCreateTopicsEnable: true
+        deleteTopicEnable: true
+        
+        persistence:
+          enabled: true
+          size: 10Gi
+          storageClass: standard-rwo
+        
+        resources:
+          requests:
+            memory: "512Mi"
+            cpu: "250m"
+          limits:
+            memory: "1Gi"
+            cpu: "500m"
+        
+        # Configuración para Kraft mode (sin Zookeeper)
+        kraft:
+          enabled: true
+        
+        # Configuración de seguridad
+        auth:
+          clientProtocol: plaintext
+          interBrokerProtocol: plaintext
+        
+        # Métricas para Prometheus
+        metrics:
+          kafka:
+            enabled: true
+          jmx:
+            enabled: false
+  
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: kafka-system
+  
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+    - CreateNamespace=true

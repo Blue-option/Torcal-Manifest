@@ -1,0 +1,112 @@
+# App para aplicar configuraciones de cert-manager
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: cert-manager-config
+  namespace: argocd
+spec:
+  project: infrastructure
+  source:
+    repoURL: https://github.com/Blue-option/Torcal-Manifest
+    targetRevision: main
+    path: infrastructura/configs/cert-manager
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: cert-manager
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+    - CreateNamespace=false  # El namespace ya existe
+
+---
+# App para aplicar configuraciones de monitoring
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: monitoring-config
+  namespace: argocd
+spec:
+  project: infrastructure
+  source:
+    repoURL: https://github.com/Blue-option/Torcal-Manifest
+    targetRevision: main
+    path: infrastructura/configs/monitoring
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: monitoring
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+    - CreateNamespace=false
+
+---
+# App para aplicar configuraciones de ingress
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: ingress-config
+  namespace: argocd
+spec:
+  project: infrastructure
+  source:
+    repoURL: https://github.com/Blue-option/Torcal-Manifest
+    targetRevision: main
+    path: infrastructura/configs/ingress
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: ingress-nginx
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+
+
+---
+# App para aplicar configuraciones de KEDA
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: keda-config
+  namespace: argocd
+spec:
+  project: infrastructure
+  source:
+    repoURL: https://github.com/Blue-option/Torcal-Manifest
+    targetRevision: main
+    path: infrastructure/configs/keda
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: keda
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+    - CreateNamespace=false  # El namespace ya existe
+
+---
+# App para aplicar configuraciones de Kafka
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: kafka-config
+  namespace: argocd
+spec:
+  project: infrastructure
+  source:
+    repoURL: https://github.com/Blue-option/Torcal-Manifest
+    targetRevision: main
+    path: infrastructura/configs/kafka
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: kafka-system
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+    - CreateNamespace=false

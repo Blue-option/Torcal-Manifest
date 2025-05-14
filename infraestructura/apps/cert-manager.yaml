@@ -1,0 +1,74 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: cert-manager
+  namespace: argocd
+spec:
+  project: infrastructure
+  source:
+    repoURL: https://charts.jetstack.io
+    targetRevision: v1.13.3
+    chart: cert-manager
+    helm:
+      releaseName: cert-manager
+      values: |
+        installCRDs: true
+        
+        global:
+          logLevel: 2
+          leaderElection:
+            namespace: cert-manager
+        
+        resources:
+          requests:
+            cpu: 50m
+            memory: 64Mi
+          limits:
+            cpu: 250m
+            memory: 256Mi
+        
+        webhook:
+          resources:
+            requests:
+              cpu: 10m
+              memory: 32Mi
+            limits:
+              cpu: 100m
+              memory: 128Mi
+        
+        cainjector:
+          resources:
+            requests:
+              cpu: 10m
+              memory: 32Mi
+            limits:
+              cpu: 100m
+              memory: 128Mi
+        
+        prometheus:
+          enabled: true
+          servicemonitor:
+            enabled: true
+            labels:
+              prometheus: kube-prometheus
+        
+        securityContext:
+          runAsNonRoot: true
+          fsGroup: 1001
+        
+        # Configuración para Let's Encrypt
+        ingressShim:
+          defaultIssuerName: letsencrypt-prod
+          defaultIssuerKind: ClusterIssuer
+  
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: cert-manager
+  
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+    - CreateNamespace=true
+    - ServerSideApply=true

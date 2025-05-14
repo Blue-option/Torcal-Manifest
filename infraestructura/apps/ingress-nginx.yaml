@@ -1,0 +1,58 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: ingress-nginx
+  namespace: argocd
+spec:
+  project: infrastructure
+  source:
+    repoURL: https://kubernetes.github.io/ingress-nginx
+    targetRevision: 4.9.0
+    chart: ingress-nginx
+    helm:
+      releaseName: ingress-nginx
+      values: |
+        controller:
+          resources:
+            requests:
+              cpu: 100m
+              memory: 128Mi
+            limits:
+              cpu: 500m
+              memory: 512Mi
+          
+          service:
+            type: LoadBalancer
+            annotations:
+              cloud.google.com/load-balancer-type: "External"
+          
+          metrics:
+            enabled: true
+            service:
+              annotations:
+                prometheus.io/scrape: "true"
+                prometheus.io/port: "10254"
+          
+          config:
+            proxy-body-size: 100m
+            use-forwarded-headers: "true"
+            compute-full-forwarded-for: "true"
+            use-proxy-protocol: "false"
+          
+          autoscaling:
+            enabled: true
+            minReplicas: 2
+            maxReplicas: 5
+            targetCPUUtilizationPercentage: 80
+            targetMemoryUtilizationPercentage: 80
+  
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: ingress-nginx
+  
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+    - CreateNamespace=true

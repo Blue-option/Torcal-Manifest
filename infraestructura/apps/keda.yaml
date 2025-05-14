@@ -1,0 +1,50 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: keda
+  namespace: argocd
+spec:
+  project: infrastructure
+  source:
+    repoURL: https://kedacore.github.io/charts
+    targetRevision: 2.11.2
+    chart: keda
+    helm:
+      releaseName: keda
+      values: |
+        crds:
+          install: true
+        
+        resources:
+          operator:
+            requests:
+              cpu: 100m
+              memory: 128Mi
+            limits:
+              cpu: 500m
+              memory: 512Mi
+          
+          metricsServer:
+            requests:
+              cpu: 100m
+              memory: 128Mi
+            limits:
+              cpu: 500m
+              memory: 512Mi
+        
+        podSecurityContext:
+          runAsNonRoot: true
+          runAsUser: 1000
+          fsGroup: 1000
+  
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: keda
+  
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+    - CreateNamespace=true
+    - ServerSideApply=true
