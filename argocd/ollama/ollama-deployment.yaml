@@ -4,7 +4,7 @@ metadata:
   name: ollama
   namespace: torcal-ml
 spec:
-  replicas: 0 # KEDA lo escalará
+  replicas: 0
   selector:
     matchLabels:
       app: ollama
@@ -13,42 +13,58 @@ spec:
       labels:
         app: ollama
     spec:
+      serviceAccountName: ollama-sa  # Añadir ServiceAccount
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        fsGroup: 1000
+        seccompProfile:
+          type: RuntimeDefault
       terminationGracePeriodSeconds: 1800
       containers:
       - name: ollama
         image: ollama/ollama:latest
+        securityContext:
+          allowPrivilegeEscalation: false
+          runAsNonRoot: true
+          runAsUser: 1000
+          capabilities:
+            drop:
+              - ALL
+            add:
+              - SYS_RESOURCE  # Necesario para GPU
         env:
         - name: OLLAMA_NUM_PARALLEL
-          value: "3"  # Reducir a 1 para evitar contención
+          value: "3"
         - name: OLLAMA_MAX_LOADED_MODELS
-          value: "2"  # Cargar solo 1 modelo a la vez
+          value: "2"
         - name: OLLAMA_KEEP_ALIVE
-          value: "30m"  # Mantener modelo en memoria más tiempo
+          value: "30m"
         - name: OLLAMA_GPU_OVERHEAD
-          value: "0"  # Sin overhead de GPU
+          value: "0"
         - name: OLLAMA_NUM_GPU
           value: "1"
         - name: OLLAMA_FLASH_ATTENTION
-          value: "true"  # Usar Flash Attention si está disponible
+          value: "true"
         - name: CUDA_VISIBLE_DEVICES
           value: "0"
+        - name: HOME
+          value: "/home/ollama"
+        - name: OLLAMA_MODELS
+          value: "/home/ollama/.ollama/models"
         ports:
         - containerPort: 11434
         command: ["/bin/sh"]
         args: 
           - "-c"
           - |
-            # Iniciar Ollama en background
             ollama serve &
-            # Esperar a que el servicio esté disponible
             echo "Esperando a que Ollama esté disponible..."
             sleep 10
-            # Intentar descargar el modelo gemma3:4b
-            echo "Descargando modelo gemma3:4b..."
-            ollama pull gemma3:4b
-            ollama pull bge-m3
-            echo "Modelos gemma3:4b descargado y listo."
-            # Mantener el contenedor ejecutándose
+            echo "Descargando modelos..."
+            ollama pull gemma3:4b || true
+            ollama pull bge-m3 || true
+            echo "Modelos descargados y listos."
             wait
         resources:
           limits:
@@ -59,6 +75,16 @@ spec:
             nvidia.com/gpu: 1
             memory: "8Gi"
             cpu: "4000m"
+        volumeMounts:
+        - name: ollama-home
+          mountPath: /home/ollama
+        - name: tmp
+          mountPath: /tmp
+      volumes:
+      - name: ollama-home
+        emptyDir: {}
+      - name: tmp
+        emptyDir: {}
       nodeSelector:
         gpu: "true"
         cloud.google.com/gke-accelerator: nvidia-l4

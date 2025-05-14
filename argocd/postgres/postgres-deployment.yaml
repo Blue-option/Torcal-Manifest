@@ -1,3 +1,4 @@
+
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -14,10 +15,23 @@ spec:
       labels:
         app: postgres
     spec:
-      serviceAccountName: postgres-sa
+      serviceAccountName: postgres-sa  # Añadir ServiceAccount
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 999  # UID del usuario postgres
+        fsGroup: 999
+        seccompProfile:
+          type: RuntimeDefault
       containers:
       - name: postgres
         image: postgres:15
+        securityContext:
+          allowPrivilegeEscalation: false
+          runAsNonRoot: true
+          runAsUser: 999
+          capabilities:
+            drop:
+              - ALL
         resources:
           limits:
             memory: "1Gi"
@@ -43,12 +57,27 @@ spec:
             secretKeyRef:
               name: postgres-secret
               key: database
-        # Añade esta variable de entorno
         - name: PGDATA
           value: /var/lib/postgresql/data/pgdata
         volumeMounts:
         - name: postgres-storage
           mountPath: /var/lib/postgresql/data
+        livenessProbe:
+          exec:
+            command:
+              - pg_isready
+              - -U
+              - $(POSTGRES_USER)
+          initialDelaySeconds: 30
+          periodSeconds: 10
+        readinessProbe:
+          exec:
+            command:
+              - pg_isready
+              - -U
+              - $(POSTGRES_USER)
+          initialDelaySeconds: 5
+          periodSeconds: 5
       volumes:
       - name: postgres-storage
         persistentVolumeClaim:

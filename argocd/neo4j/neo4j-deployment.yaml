@@ -14,10 +14,23 @@ spec:
       labels:
         app: neo4j
     spec:
-      serviceAccountName: neo4j-sa
+      serviceAccountName: neo4j-sa  # Añadir ServiceAccount
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 7474  # UID del usuario neo4j
+        fsGroup: 7474
+        seccompProfile:
+          type: RuntimeDefault
       containers:
       - name: neo4j
         image: neo4j:5.15
+        securityContext:
+          allowPrivilegeEscalation: false
+          runAsNonRoot: true
+          runAsUser: 7474
+          capabilities:
+            drop:
+              - ALL
         resources:
           limits:
             memory: "2Gi"
@@ -32,13 +45,14 @@ spec:
           name: bolt
         env:
         - name: NEO4J_AUTH
-          value: neo4j/password123
-        # Añadir estas configuraciones para resolver los problemas
+          valueFrom:
+            secretKeyRef:
+              name: neo4j-secret
+              key: auth
         - name: NEO4J_server_config_strict__validation_enabled
           value: "false"
         - name: NEO4J_dbms_directories_mode
-          value: "777"
-        # Protegerse contra las variables de entorno automáticas de Kubernetes
+          value: "755"  # Cambiado de 777 a 755
         - name: NEO4J_dbms_connector_bolt_listen__address
           value: "0.0.0.0:7687"
         - name: NEO4J_dbms_connector_http_listen__address
@@ -59,6 +73,18 @@ spec:
         - name: neo4j-plugins
           mountPath: /plugins
           subPath: plugins-dir
+        livenessProbe:
+          httpGet:
+            path: /
+            port: 7474
+          initialDelaySeconds: 45
+          periodSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /
+            port: 7474
+          initialDelaySeconds: 15
+          periodSeconds: 5
       volumes:
       - name: neo4j-data
         persistentVolumeClaim:
