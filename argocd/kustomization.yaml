@@ -20,4 +20,6 @@ resources:
   - kafka/kafka-deployment.yaml
   - kafka/kafka-service.yaml
   - kafka/kafka-redirect.yaml
-  
+  - rbac/roles.yaml
+  - rbac/rolebindings.yaml
+  - rbac/serviceaccounts.yaml  
