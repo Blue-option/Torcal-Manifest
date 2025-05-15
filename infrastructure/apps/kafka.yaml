@@ -16,6 +16,8 @@ spec:
         # Use KRaft mode (no Zookeeper)
         kraft:
           enabled: true
+          
+        # Disable Zookeeper entirely
         zookeeper:
           enabled: false
         
@@ -84,10 +86,36 @@ spec:
           securityContext:
             runAsUser: 0
         
-        # Metrics
+        # Metrics configuration
         metrics:
           kafka:
             enabled: true
+            # Disable JMX to use the Kafka exporter
+            jmx:
+              enabled: false
+            # Kafka exporter configuration
+            kafka:
+              enabled: true
+              # Fix for KRaft mode - point directly to the broker
+              service:
+                ports:
+                  metrics: 9308
+              extraFlags:
+                - "--kafka.server=kafka.kafka-system.svc.cluster.local:9092"
+                - "--web.listen-address=:9308"
+                - "--log.level=debug"
+                - "--kafka.version=3.5.0"
+              resources:
+                limits:
+                  memory: 128Mi
+                  cpu: 100m
+                requests:
+                  memory: 64Mi
+                  cpu: 50m
+              serviceMonitor:
+                enabled: true
+                additionalLabels:
+                  prometheus: kube-prometheus
         
         # Init container for volume permissions
         initContainers:
@@ -108,6 +136,18 @@ spec:
         
         serviceAccount:
           create: true
+          
+        # Ensure service names are correct
+        headless:
+          service:
+            ports:
+              client: 9092
+              controller: 9093
+        
+        service:
+          type: ClusterIP
+          ports:
+            client: 9092
   
   destination:
     server: https://kubernetes.default.svc

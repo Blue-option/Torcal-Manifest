@@ -8,11 +8,15 @@ metadata:
 spec:
   selector:
     matchLabels:
-      app: kafka
+      app.kubernetes.io/name: kafka
+      app.kubernetes.io/component: metrics
+  namespaceSelector:
+    matchNames:
+      - kafka-system
   endpoints:
-  - port: jmx
-    path: /metrics
+  - port: metrics
     interval: 30s
+    path: /metrics
 
 ---
 # Service for exposing Kafka metrics
