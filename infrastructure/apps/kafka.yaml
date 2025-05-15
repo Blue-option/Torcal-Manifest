@@ -1,3 +1,4 @@
+
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
@@ -6,70 +7,12 @@ metadata:
 spec:
   project: infrastructure
   source:
-    repoURL: https://charts.bitnami.com/bitnami
-    targetRevision: 26.4.0  # Versión actualizada
-    chart: kafka
-    helm:
-      releaseName: kafka
-      values: |
-        replicaCount: 1
-        autoCreateTopicsEnable: true
-        deleteTopicEnable: true
-        
-        persistence:
-          enabled: true
-          size: 10Gi
-          storageClass: standard-rwo
-        
-        resources:
-          requests:
-            memory: "512Mi"
-            cpu: "250m"
-          limits:
-            memory: "1Gi"
-            cpu: "500m"
-        
-        # Configuración para Kraft mode (sin Zookeeper)
-        kraft:
-          enabled: true
-        
-        # Desactivar Zookeeper completamente
-        zookeeper:
-          enabled: false
-        
-        # Configuración de listeners
-        listeners:
-          client:
-            protocol: PLAINTEXT
-            containerPort: 9092
-          controller:
-            protocol: PLAINTEXT 
-            containerPort: 9093
-          interbroker:
-            protocol: PLAINTEXT
-        
-        # Configuración de seguridad
-        auth:
-          clientProtocol: plaintext
-          interBrokerProtocol: plaintext
-        
-        # Configuración del servicio
-        service:
-          type: ClusterIP
-          ports:
-            client: 9092
-        
-        # Métricas para Prometheus
-        metrics:
-          kafka:
-            enabled: true
-          jmx:
-            enabled: false
-  
+    repoURL: https://github.com/Blue-option/Torcal-Manifest
+    targetRevision: main
+    path: infrastructure/configs/kafka/base
   destination:
     server: https://kubernetes.default.svc
     namespace: kafka-system
-  
   syncPolicy:
     automated:
       prune: true

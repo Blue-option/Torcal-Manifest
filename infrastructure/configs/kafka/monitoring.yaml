@@ -1,4 +1,3 @@
-
 apiVersion: monitoring.coreos.com/v1
 kind: ServiceMonitor
 metadata:
@@ -9,11 +8,28 @@ metadata:
 spec:
   selector:
     matchLabels:
-      app.kubernetes.io/name: kafka
+      app: kafka
   endpoints:
-  - port: metrics
+  - port: jmx
     path: /metrics
     interval: 30s
+
+---
+# Service for exposing Kafka metrics
+apiVersion: v1
+kind: Service
+metadata:
+  name: kafka-metrics
+  namespace: kafka-system
+  labels:
+    app: kafka
+spec:
+  ports:
+  - name: jmx
+    port: 5555
+    targetPort: jmx
+  selector:
+    app: kafka
 
 ---
 # NetworkPolicy para Kafka (opcional)
