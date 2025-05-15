@@ -1,3 +1,4 @@
+
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
@@ -7,7 +8,7 @@ spec:
   project: infrastructure
   source:
     repoURL: https://kedacore.github.io/charts
-    targetRevision: 2.11.2
+    targetRevision: 2.13.0  # Versión actualizada que soluciona el problema
     chart: keda
     helm:
       releaseName: keda
@@ -47,4 +48,4 @@ spec:
       selfHeal: true
     syncOptions:
     - CreateNamespace=true
-    - ServerSideApply=true
+    - ServerSideApply=tru
