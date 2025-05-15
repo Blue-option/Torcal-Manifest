@@ -16,9 +16,6 @@ resources:
   - ollama/ollama-service.yaml
   - ollama/ollama-pvc.yaml
   - keda-scaler/ollama-scaler.yaml
-  - kafka/kafka-deployment.yaml
-  - kafka/kafka-service.yaml
-  - kafka/kafka-redirect.yaml
   - rbac/roles.yaml
   - rbac/rolebindings.yaml
   - rbac/serviceaccounts.yaml  
