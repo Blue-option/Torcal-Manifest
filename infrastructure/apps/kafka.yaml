@@ -1,4 +1,3 @@
-
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
@@ -8,7 +7,7 @@ spec:
   project: infrastructure
   source:
     repoURL: https://charts.bitnami.com/bitnami
-    targetRevision: 20.1.1
+    targetRevision: 26.4.0  # Versión actualizada
     chart: kafka
     helm:
       releaseName: kafka
@@ -34,10 +33,31 @@ spec:
         kraft:
           enabled: true
         
+        # Desactivar Zookeeper completamente
+        zookeeper:
+          enabled: false
+        
+        # Configuración de listeners
+        listeners:
+          client:
+            protocol: PLAINTEXT
+            containerPort: 9092
+          controller:
+            protocol: PLAINTEXT 
+            containerPort: 9093
+          interbroker:
+            protocol: PLAINTEXT
+        
         # Configuración de seguridad
         auth:
           clientProtocol: plaintext
           interBrokerProtocol: plaintext
+        
+        # Configuración del servicio
+        service:
+          type: ClusterIP
+          ports:
+            client: 9092
         
         # Métricas para Prometheus
         metrics:
