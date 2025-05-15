@@ -4,7 +4,7 @@ metadata:
   name: kafka
   namespace: argocd
 spec:
-  project: infrastructure
+  project: default
   source:
     repoURL: https://charts.bitnami.com/bitnami
     targetRevision: 26.4.0
@@ -48,9 +48,7 @@ spec:
         persistence:
           enabled: true
           size: 10Gi
-          storageClass: standard-rwo
-          # Set appropriate permissions on the mount
-          mountPath: /bitnami/kafka
+          storageClass: standard
         
         # Resource allocation
         resources:
@@ -65,90 +63,14 @@ spec:
         auth:
           clientProtocol: plaintext
           interBrokerProtocol: plaintext
-        
-        # Security context
-        containerSecurityContext:
-          runAsUser: 1001
-          runAsNonRoot: true
-          allowPrivilegeEscalation: false
-        podSecurityContext:
-          enabled: true
-          fsGroup: 1001
-          runAsUser: 1001
-        
-        # Volume permissions
-        volumePermissions:
-          enabled: true
-          image:
-            registry: docker.io
-            repository: bitnami/bitnami-shell
-            tag: latest
-          securityContext:
-            runAsUser: 0
-        
-        # Metrics configuration
-        metrics:
-          kafka:
-            enabled: true
-            # Disable JMX to use the Kafka exporter
-            jmx:
-              enabled: false
-            # Kafka exporter configuration
-            kafka:
-              enabled: true
-              # Fix for KRaft mode - point directly to the broker
-              service:
-                ports:
-                  metrics: 9308
-              extraFlags:
-                - "--kafka.server=kafka.kafka-system.svc.cluster.local:9092"
-                - "--web.listen-address=:9308"
-                - "--log.level=debug"
-                - "--kafka.version=3.5.0"
-              resources:
-                limits:
-                  memory: 128Mi
-                  cpu: 100m
-                requests:
-                  memory: 64Mi
-                  cpu: 50m
-              serviceMonitor:
-                enabled: true
-                additionalLabels:
-                  prometheus: kube-prometheus
-        
-        # Init container for volume permissions
-        initContainers:
-          - name: volume-permissions
-            image: docker.io/bitnami/bitnami-shell:latest
-            command:
-              - /bin/bash
-              - -ec
-              - |
-                mkdir -p /bitnami/kafka/data /bitnami/kafka/config
-                chmod -R 700 /bitnami/kafka/
-                chown -R 1001:1001 /bitnami/kafka/
-            securityContext:
-              runAsUser: 0
-            volumeMounts:
-              - name: data
-                mountPath: /bitnami/kafka
-        
-        serviceAccount:
-          create: true
           
-        # Ensure service names are correct
-        headless:
-          service:
-            ports:
-              client: 9092
-              controller: 9093
-        
-        service:
-          type: ClusterIP
-          ports:
-            client: 9092
-  
+        # Importante: habilita la creación automática de topics
+        extraEnvVars:
+          - name: KAFKA_CFG_AUTO_CREATE_TOPICS_ENABLE
+            value: "true"
+          - name: KAFKA_CFG_DELETE_TOPIC_ENABLE
+            value: "true"
+
   destination:
     server: https://kubernetes.default.svc
     namespace: kafka-system
