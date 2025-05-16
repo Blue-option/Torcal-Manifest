@@ -98,6 +98,9 @@ spec:
         # Metrics
         - name: KAFKA_CFG_JMX_PORT
           value: "5555"
+        # Topic para torcal-gpu-trigger
+        - name: KAFKA_TOPICS
+          value: "torcal-gpu-trigger:3:1"
         ports:
         - name: kafka
           containerPort: 9092
