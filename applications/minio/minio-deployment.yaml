@@ -1,9 +1,10 @@
 apiVersion: apps/v1
-kind: Deployment
+kind: Statefulset
 metadata:
   name: minio
   namespace: torcal-ml
 spec:
+  serviceName: minio
   selector:
     matchLabels:
       app: minio
