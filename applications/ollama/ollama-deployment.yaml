@@ -4,7 +4,7 @@ metadata:
   name: ollama
   namespace: torcal-ml
 spec:
-  replicas: 0
+  replicas: 1
   selector:
     matchLabels:
       app: ollama

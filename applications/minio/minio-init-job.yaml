@@ -14,23 +14,23 @@ spec:
         - /bin/sh
         - -c
         - |
-          # Esperar a que MinIO esté listo
+          # Wait for MinIO to be ready
           sleep 15
           
-          # Configurar cliente - CORREGIDO el endpoint
+          # Configure MinIO client
           /usr/bin/mc config host add myminio http://minio.torcal-ml.svc.cluster.local:9000 $MINIO_ROOT_USER $MINIO_ROOT_PASSWORD
           
-          # Crear buckets
+          # Create buckets
           /usr/bin/mc mb -p myminio/torcal-models
           /usr/bin/mc mb -p myminio/torcal-data
           
-          # Crear directorios importantes (usar mb con paths completos)
+          # Create important directories
           /usr/bin/mc mb -p myminio/torcal-models/models/
           /usr/bin/mc mb -p myminio/torcal-models/jobs/status/
           /usr/bin/mc mb -p myminio/torcal-models/checkpoints/
           /usr/bin/mc mb -p myminio/torcal-models/logs/
           
-          # Configurar políticas (usando anonymous en lugar de policy set)
+          # Configure access policies
           /usr/bin/mc anonymous set download myminio/torcal-models
           /usr/bin/mc anonymous set download myminio/torcal-data
           
