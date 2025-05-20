@@ -22,3 +22,8 @@ resources:
   - secrets/api-tokens.yaml
   - secrets/neo4j-secret.yaml
   - secrets/postgres-secret.yaml
+  - minio/minio-deployment.yaml
+  - minio/minio-service.yaml
+  - minio/minio-pvc.yaml
+  - minio/minio-init-job.yaml
+  - secrets/minio-secret.yaml

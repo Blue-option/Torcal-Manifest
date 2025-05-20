@@ -42,3 +42,10 @@ data:
     TOKEN_DQN_RECOMMEND_BLOCK=B1OyOhL3X7ixkJAOwWzpUT
     TOKEN_DQN_TOPIC_TEST=B1OyOhL3X7ixkJAOwWzpUT
     TOKEN_DQN_INITIAL_EVALUATION=B1OyOhL3X7ixkJ
+
+    MINIO_ENDPOINT: "minio.torcal-ml.svc.cluster.local::9000"
+    MINIO_ACCESS_KEY: "torcaladmin"
+    MINIO_SECRET_KEY: "6fDVW1Hw55U2rbMOR16Bmmrx"
+    MINIO_USE_SSL: "false"
+    MINIO_BUCKET_MODELS: "torcal-models"
+    MINIO_BUCKET_DATA: "torcal-data"
