@@ -1,15 +1,14 @@
 apiVersion: apps/v1
-kind: Statefulset
+kind: StatefulSet
 metadata:
   name: minio
   namespace: torcal-ml
 spec:
-  serviceName: minio
+  serviceName: "minio-headless"
+  replicas: 1
   selector:
     matchLabels:
       app: minio
-  strategy:
-    type: Recreate
   template:
     metadata:
       labels:
@@ -52,7 +51,7 @@ spec:
         - name: MINIO_DISK_USAGE_THRESHOLD
           value: "98"
         volumeMounts:
-        - name: minio-data
+        - name: data
           mountPath: /data
         livenessProbe:
           httpGet:
@@ -62,7 +61,12 @@ spec:
           periodSeconds: 30
           timeoutSeconds: 20
           failureThreshold: 3
-      volumes:
-      - name: minio-data
-        persistentVolumeClaim:
-          claimName: minio-data-pvc
+  volumeClaimTemplates:
+  - metadata:
+      name: data
+    spec:
+      accessModes: [ "ReadWriteOnce" ]
+      resources:
+        requests:
+          storage: 20Gi
+      storageClassName: standard
