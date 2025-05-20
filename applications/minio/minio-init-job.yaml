@@ -17,22 +17,22 @@ spec:
           # Esperar a que MinIO esté listo
           sleep 15
           
-          # Configurar cliente
-          /usr/bin/mc config host add myminio http://minio.torcal-ml.svc.cluster.local::9000 $MINIO_ROOT_USER $MINIO_ROOT_PASSWORD
+          # Configurar cliente - CORREGIDO el endpoint
+          /usr/bin/mc config host add myminio http://minio.torcal-ml.svc.cluster.local:9000 $MINIO_ROOT_USER $MINIO_ROOT_PASSWORD
           
           # Crear buckets
           /usr/bin/mc mb -p myminio/torcal-models
           /usr/bin/mc mb -p myminio/torcal-data
           
-          # Crear directorios importantes
-          /usr/bin/mc mkdir -p myminio/torcal-models/models
-          /usr/bin/mc mkdir -p myminio/torcal-models/jobs/status
-          /usr/bin/mc mkdir -p myminio/torcal-models/checkpoints
-          /usr/bin/mc mkdir -p myminio/torcal-models/logs
+          # Crear directorios importantes (usar mb con paths completos)
+          /usr/bin/mc mb -p myminio/torcal-models/models/
+          /usr/bin/mc mb -p myminio/torcal-models/jobs/status/
+          /usr/bin/mc mb -p myminio/torcal-models/checkpoints/
+          /usr/bin/mc mb -p myminio/torcal-models/logs/
           
-          # Configurar políticas
-          /usr/bin/mc policy set download myminio/torcal-models
-          /usr/bin/mc policy set download myminio/torcal-data
+          # Configurar políticas (usando anonymous en lugar de policy set)
+          /usr/bin/mc anonymous set download myminio/torcal-models
+          /usr/bin/mc anonymous set download myminio/torcal-data
           
           echo 'MinIO buckets created and configured successfully'
         env:
