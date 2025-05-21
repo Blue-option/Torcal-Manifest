@@ -1,14 +1,14 @@
 apiVersion: apps/v1
-kind: Deployment
+kind: StatefulSet
 metadata:
   name: neo4j
   namespace: torcal-ml
 spec:
+  serviceName: "neo4j"
+  replicas: 1
   selector:
     matchLabels:
       app: neo4j
-  strategy:
-    type: Recreate
   template:
     metadata:
       labels:
@@ -33,12 +33,10 @@ spec:
         env:
         - name: NEO4J_AUTH
           value: neo4j/password123
-        # Añadir estas configuraciones para resolver los problemas
         - name: NEO4J_server_config_strict__validation_enabled
           value: "false"
         - name: NEO4J_dbms_directories_mode
           value: "777"
-        # Protegerse contra las variables de entorno automáticas de Kubernetes
         - name: NEO4J_dbms_connector_bolt_listen__address
           value: "0.0.0.0:7687"
         - name: NEO4J_dbms_connector_http_listen__address
@@ -47,28 +45,48 @@ spec:
         - configMapRef:
             name: neo4j-config
         volumeMounts:
-        - name: neo4j-data
+        - name: data
           mountPath: /data
           subPath: data-dir
-        - name: neo4j-logs
+        - name: logs
           mountPath: /logs
           subPath: logs-dir
-        - name: neo4j-import
+        - name: import
           mountPath: /var/lib/neo4j/import
           subPath: import-dir
-        - name: neo4j-plugins
+        - name: plugins
           mountPath: /plugins
           subPath: plugins-dir
-      volumes:
-      - name: neo4j-data
-        persistentVolumeClaim:
-          claimName: neo4j-data-pvc
-      - name: neo4j-logs
-        persistentVolumeClaim:
-          claimName: neo4j-logs-pvc
-      - name: neo4j-import
-        persistentVolumeClaim:
-          claimName: neo4j-import-pvc
-      - name: neo4j-plugins
-        persistentVolumeClaim:
-          claimName: neo4j-plugins-pvc
+  volumeClaimTemplates:
+  - metadata:
+      name: data
+    spec:
+      accessModes: [ "ReadWriteOnce" ]
+      resources:
+        requests:
+          storage: 10Gi
+      storageClassName: standard
+  - metadata:
+      name: logs
+    spec:
+      accessModes: [ "ReadWriteOnce" ]
+      resources:
+        requests:
+          storage: 2Gi
+      storageClassName: standard
+  - metadata:
+      name: import
+    spec:
+      accessModes: [ "ReadWriteOnce" ]
+      resources:
+        requests:
+          storage: 5Gi
+      storageClassName: standard
+  - metadata:
+      name: plugins
+    spec:
+      accessModes: [ "ReadWriteOnce" ]
+      resources:
+        requests:
+          storage: 1Gi
+      storageClassName: standard
