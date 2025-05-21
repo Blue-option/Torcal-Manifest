@@ -25,11 +25,11 @@ spec:
         - ':9001'
         resources:
           limits:
-            memory: "8Gi"
-            cpu: "4000m"
+            memory: "2Gi"
+            cpu: "10000m"
           requests:
-            memory: "4Gi"
-            cpu: "2000m"
+            memory: "1Gi"
+            cpu: "500m"
         ports:
         - containerPort: 9000
           name: api
