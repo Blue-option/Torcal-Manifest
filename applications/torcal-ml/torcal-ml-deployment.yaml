@@ -53,9 +53,15 @@ spec:
         - name: NEO4J_URI
           value: "bolt://neo4j:7687"
         - name: NEO4J_USER
-          value: "neo4j"
+          valueFrom:
+            secretKeyRef:
+              name: neo4j-secret
+              key: username
         - name: NEO4J_PASSWORD
-          value: "password123"
+          valueFrom:
+            secretKeyRef:
+              name: neo4j-secret
+              key: password
         - name: MINIO_ENDPOINT
           value: "minio:9000"
         - name: MINIO_ACCESS_KEY
