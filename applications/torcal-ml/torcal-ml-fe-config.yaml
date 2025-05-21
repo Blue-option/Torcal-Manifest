@@ -1,0 +1,12 @@
+apiVersion: networking.gke.io/v1beta1
+kind: FrontendConfig
+metadata:
+  name: torcal-ml-frontend-config
+  namespace: torcal-ml
+spec:
+  redirectToHttps:
+    enabled: true
+    responseCodeName: MOVED_PERMANENTLY_DEFAULT
+  connectionDraining:
+    drainingTimeoutSec: 60
+  timeoutSec: 600  # Tiempo de espera más largo para API

@@ -10,6 +10,8 @@ resources:
   - torcal-ml/torcal-ml-deployment.yaml
   - torcal-ml/torcal-ml-service.yaml
   - torcal-ml/torcal-ml-configmap.yaml
+  - torcal-ml/torcal-ml-ingress.yaml
+  - torcal-ml/torcal-ml-fe-config.yaml
   - ollama/ollama-deployment.yaml
   - ollama/ollama-service.yaml
   - ollama/ollama-pvc.yaml
