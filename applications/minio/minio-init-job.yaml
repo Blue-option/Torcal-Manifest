@@ -15,7 +15,7 @@ spec:
         - -c
         - |
           # Wait for MinIO to be ready
-          sleep 15
+          sleep 90
           
           # Configure MinIO client
           /usr/bin/mc config host add myminio http://minio.torcal-ml.svc.cluster.local:9000 $MINIO_ROOT_USER $MINIO_ROOT_PASSWORD
