@@ -63,6 +63,17 @@ spec:
             secretKeyRef:
               name: minio-secret
               key: root-user
+        - name: MINIO_SECRET_KEY
+          valueFrom:
+            secretKeyRef:
+              name: minio-secret
+              key: root-password
+        - name: MINIO_USE_SSL
+          value: "false"
+        - name: MINIO_BUCKET
+          value: "torcal-models"
+        - name: MINIO_DATA_BUCKET
+          value: "torcal-data"
         readinessProbe:
           httpGet:
             path: /docs
