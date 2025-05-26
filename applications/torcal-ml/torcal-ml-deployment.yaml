@@ -80,6 +80,8 @@ spec:
           value: "torcal-models"
         - name: MINIO_DATA_BUCKET
           value: "torcal-data"
+        - name: OLLAMA_URL
+          value: "ollama:11434"
         readinessProbe:
           httpGet:
             path: /docs
