@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: neo4j-headless
+  name: neo4j
   namespace: torcal-ml
   labels:
     app: neo4j
