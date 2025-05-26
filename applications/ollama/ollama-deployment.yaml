@@ -25,8 +25,8 @@ spec:
       - name: ollama
         image: ollama/ollama:latest
         securityContext:
-          allowPrivilegeEscalation: false
-          runAsNonRoot: true
+          allowPrivilegeEscalation: true
+          runAsNonRoot: false
           runAsUser: 1000
           capabilities:
             drop:
