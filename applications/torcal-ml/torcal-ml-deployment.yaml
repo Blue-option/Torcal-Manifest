@@ -31,6 +31,8 @@ spec:
         ports:
         - containerPort: 8000
         env:
+        - name: OLLAMA_URL
+          value: "http://ollama:11434"
         - name: MODELO_TAXONOMIA
           value: gemma3:4b
         - name: POSTGRES_HOST
@@ -82,8 +84,6 @@ spec:
           value: "torcal-models"
         - name: MINIO_DATA_BUCKET
           value: "torcal-data"
-        - name: OLLAMA_URL
-          value: "http://ollama:11434"
         readinessProbe:
           httpGet:
             path: /docs
