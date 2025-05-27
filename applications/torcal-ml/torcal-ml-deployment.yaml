@@ -31,6 +31,8 @@ spec:
         ports:
         - containerPort: 8000
         env:
+        - name: MODELO_TAXONOMIA
+          value: gemma3:4b
         - name: POSTGRES_HOST
           value: "postgres"
         - name: POSTGRES_PORT
