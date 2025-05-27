@@ -35,13 +35,13 @@ spec:
               - SYS_RESOURCE  # Necesario para GPU
         env:
         - name: OLLAMA_NUM_PARALLEL
-          value: "3"
+          value: "1"
         - name: OLLAMA_MAX_LOADED_MODELS
-          value: "2"
+          value: "1"
         - name: OLLAMA_KEEP_ALIVE
-          value: "30m"
+          value: "5m"
         - name: OLLAMA_GPU_OVERHEAD
-          value: "0"
+          value: "512000000"
         - name: OLLAMA_NUM_GPU
           value: "1"
         - name: OLLAMA_FLASH_ATTENTION
