@@ -16,7 +16,7 @@ spec:
       serviceAccountName: torcal-ml-sa
       containers:
       - name: torcal-ml
-        image: europe-southwest1-docker.pkg.dev/pre-produccion-461015/torcal-ml/torcal-ml-localhost@sha256:f3bc0a2d474077b810b2a2a93d0558e593a564db010de65983c38cb512b3aa18
+        image: europe-southwest1-docker.pkg.dev/pre-produccion-461015/torcal-ml/torcal-ml-localhost@sha256:e8ef0061188f43acd7e23cc6a62c1c67a2443c475223ccbcbf8219ff804af626
         volumeMounts:
         - name: env-config
           mountPath: /app/.env
@@ -24,10 +24,10 @@ spec:
         resources:
           limits:
             memory: "24Gi"
-            cpu: "4000m"
+            cpu: "6000m"
           requests:
             memory: "16Gi"
-            cpu: "2000m"
+            cpu: "4000m"
         ports:
         - containerPort: 8000
         env:
