@@ -16,7 +16,7 @@ spec:
       serviceAccountName: torcal-ml-sa
       containers:
       - name: torcal-ml
-        image: europe-southwest1-docker.pkg.dev/pre-produccion-461015/torcal-ml/torcal-ml-localhost@sha256:f4921b24e94ea51583ce7fbb0db534eed3c7fba1932278b216dd92b2f30cb57f
+        image: europe-southwest1-docker.pkg.dev/pre-produccion-461015/torcal-ml/torcal-ml-localhost@sha256:4c4ad5e1f8342f9b60847241f57b3721e72a14b9a6b32115c73a13f979155a39
         volumeMounts:
         - name: env-config
           mountPath: /app/.env
