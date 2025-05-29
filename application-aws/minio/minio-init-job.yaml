@@ -1,0 +1,49 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: minio-init
+  namespace: torcal-ml
+spec:
+  template:
+    spec:
+      serviceAccountName: minio-sa
+      containers:
+      - name: minio-mc
+        image: minio/mc
+        command:
+        - /bin/sh
+        - -c
+        - |
+          # Wait for MinIO to be ready
+          sleep 90
+          
+          # Configure MinIO client
+          /usr/bin/mc config host add myminio http://minio.torcal-ml.svc.cluster.local:9000 $MINIO_ROOT_USER $MINIO_ROOT_PASSWORD
+          
+          # Create buckets
+          /usr/bin/mc mb -p myminio/torcal-models
+          /usr/bin/mc mb -p myminio/torcal-data
+          
+          # Create important directories
+          /usr/bin/mc mb -p myminio/torcal-models/models/
+          /usr/bin/mc mb -p myminio/torcal-models/jobs/status/
+          /usr/bin/mc mb -p myminio/torcal-models/checkpoints/
+          /usr/bin/mc mb -p myminio/torcal-models/logs/
+          
+          # Configure access policies
+          /usr/bin/mc anonymous set download myminio/torcal-models
+          /usr/bin/mc anonymous set download myminio/torcal-data
+          
+          echo 'MinIO buckets created and configured successfully'
+        env:
+        - name: MINIO_ROOT_USER
+          valueFrom:
+            secretKeyRef:
+              name: minio-secret
+              key: root-user
+        - name: MINIO_ROOT_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: minio-secret
+              key: root-password
+      restartPolicy: OnFailure

@@ -1,0 +1,99 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ollama
+  namespace: torcal-ml
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ollama
+  template:
+    metadata:
+      labels:
+        app: ollama
+    spec:
+      serviceAccountName: ollama-sa  # Añadir ServiceAccount
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        fsGroup: 1000
+        seccompProfile:
+          type: RuntimeDefault
+      terminationGracePeriodSeconds: 1800
+      containers:
+      - name: ollama
+        image: ollama/ollama:0.6.6
+        securityContext:
+          allowPrivilegeEscalation: true
+          runAsNonRoot: false
+          runAsUser: 1000
+          capabilities:
+            drop:
+              - ALL
+            add:
+              - SYS_RESOURCE  # Necesario para GPU
+        env:
+        - name: OLLAMA_NUM_PARALLEL
+          value: "1"
+        - name: OLLAMA_MAX_LOADED_MODELS
+          value: "1"
+        - name: OLLAMA_KEEP_ALIVE
+          value: "5m"
+        - name: OLLAMA_GPU_OVERHEAD
+          value: "512000000"
+        - name: OLLAMA_NUM_GPU
+          value: "1"
+        - name: OLLAMA_FLASH_ATTENTION
+          value: "true"
+        - name: CUDA_VISIBLE_DEVICES
+          value: "0"
+        - name: HOME
+          value: "/home/ollama"
+        - name: OLLAMA_MODELS
+          value: "/home/ollama/.ollama/models"
+        ports:
+        - containerPort: 11434
+        command: ["/bin/sh"]
+        args: 
+          - "-c"
+          - |
+            ollama serve &
+            echo "Esperando a que Ollama esté disponible..."
+            sleep 10
+            echo "Descargando modelos..."
+            ollama pull gemma3:4b || true
+            ollama pull bge-m3 || true
+            echo "Modelos descargados y listos."
+            wait
+        resources:
+          limits:
+            nvidia.com/gpu: 1
+            memory: "16Gi"
+            cpu: "7000m"
+          requests:
+            nvidia.com/gpu: 1
+            memory: "8Gi"
+            cpu: "4000m"
+        volumeMounts:
+        - name: ollama-home
+          mountPath: /home/ollama
+        - name: tmp
+          mountPath: /tmp
+      volumes:
+      - name: ollama-home
+        emptyDir: {}
+      - name: tmp
+        emptyDir: {}
+      nodeSelector:
+        gpu: "true"
+        cloud.google.com/gke-accelerator: nvidia-l4
+      tolerations:
+      - key: "nvidia.com/gpu"
+        operator: "Equal"
+        value: "present"
+        effect: "NoSchedule"
+      - key: "cloud.google.com/gke-accelerator"
+        operator: "Equal"
+        value: "present"
+        effect: "NoSchedule"

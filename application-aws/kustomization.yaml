@@ -1,0 +1,29 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+  - namespace.yaml
+  - postgres/postgres-deployment.yaml
+  - postgres/postgres-service.yaml
+  - neo4j/neo4j-deployment.yaml
+  - neo4j/neo4j-service.yaml
+  - neo4j/neo4j-configmap.yaml
+  - torcal-ml/torcal-ml-deployment.yaml
+  - torcal-ml/torcal-ml-service.yaml
+  - torcal-ml/torcal-ml-configmap.yaml
+  - torcal-ml/torcal-ml-ingress.yaml
+  #- torcal-ml/torcal-ml-fe-config.yaml
+  - ollama/ollama-deployment.yaml
+  - ollama/ollama-service.yaml
+  - ollama/ollama-pvc.yaml
+  #- keda-scaler/ollama-scaler.yaml
+  - rbac/roles.yaml
+  - rbac/rolebindings.yaml
+  - rbac/serviceaccounts.yaml  
+  - secrets/api-tokens.yaml
+  - secrets/neo4j-secret.yaml
+  - secrets/postgres-secret.yaml
+  - minio/minio-deployment.yaml
+  - minio/minio-service.yaml
+  - minio/minio-init-job.yaml
+  - secrets/minio-secret.yaml
+  - almacenamiento/storage-class.yaml

@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: postgres
+  namespace: torcal-ml
+  labels:
+    app: postgres
+spec:
+  clusterIP: None
+  ports:
+  - port: 5432
+    name: postgres
+  selector:
+    app: postgres

@@ -1,0 +1,42 @@
+# rbac/rolebindings.yaml
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: torcal-ml-binding
+  namespace: torcal-ml
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: torcal-ml-role
+subjects:
+- kind: ServiceAccount
+  name: torcal-ml-sa
+  namespace: torcal-ml
+
+---
+# Restricción para prevenir escalación de privilegios
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: minimal-cluster-access
+rules:
+- apiGroups: [""]
+  resources: ["nodes"]
+  verbs: ["get", "list"]
+- apiGroups: [""]
+  resources: ["namespaces"]
+  verbs: ["get", "list"]
+
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: torcal-ml-minimal-binding
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: minimal-cluster-access
+subjects:
+- kind: ServiceAccount
+  name: torcal-ml-sa
+  namespace: torcal-ml
