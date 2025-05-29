@@ -11,11 +11,11 @@ resources:
   - torcal-ml/torcal-ml-service.yaml
   - torcal-ml/torcal-ml-configmap.yaml
   - torcal-ml/torcal-ml-ingress.yaml
-  - torcal-ml/torcal-ml-fe-config.yaml
+  #- torcal-ml/torcal-ml-fe-config.yaml
   - ollama/ollama-deployment.yaml
   - ollama/ollama-service.yaml
   - ollama/ollama-pvc.yaml
-  - keda-scaler/ollama-scaler.yaml
+  #- keda-scaler/ollama-scaler.yaml
   - rbac/roles.yaml
   - rbac/rolebindings.yaml
   - rbac/serviceaccounts.yaml  
