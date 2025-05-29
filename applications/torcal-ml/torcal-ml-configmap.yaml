@@ -58,3 +58,6 @@ data:
     MINIO_USE_SSL=false
     MINIO_BUCKET_MODELS=torcal-models
     MINIO_BUCKET_DATA=torcal-data
+
+    TOKEN_TOPICS_LIST=B1OyOhL3X7ixkJAOwWzpUT
+    
