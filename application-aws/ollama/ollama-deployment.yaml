@@ -86,14 +86,11 @@ spec:
       - name: tmp
         emptyDir: {}
       nodeSelector:
-        gpu: "true"
-        cloud.google.com/gke-accelerator: nvidia-l4
+        nvidia.com/gpu: "true"
+        node.kubernetes.io/instance-type: "g5.2xlarge"
+        accelerator: "nvidia-a10g"
       tolerations:
       - key: "nvidia.com/gpu"
-        operator: "Equal"
-        value: "present"
-        effect: "NoSchedule"
-      - key: "cloud.google.com/gke-accelerator"
         operator: "Equal"
         value: "present"
         effect: "NoSchedule"

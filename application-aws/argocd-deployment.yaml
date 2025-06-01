@@ -8,7 +8,7 @@ spec:
     namespace: torcal-ml
     server: 'https://kubernetes.default.svc'
   source:
-    path: applications
+    path: application-aws
     repoURL: 'https://github.com/Blue-option/Torcal-Manifest'
     targetRevision: main
   sources: []
