@@ -1,0 +1,310 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: grafana-dashboard-complete
+  namespace: monitoring
+data:
+  infrastructure-overview.json: |
+    {
+      "dashboard": {
+        "id": null,
+        "title": "Infrastructure Overview - All Services",
+        "tags": ["infrastructure", "overview"],
+        "style": "dark",
+        "timezone": "browser",
+        "refresh": "30s",
+        "time": {
+          "from": "now-1h",
+          "to": "now"
+        },
+        "panels": [
+          {
+            "id": 1,
+            "title": "Service Health Status",
+            "type": "stat",
+            "targets": [
+              {
+                "expr": "up{job=~\"postgres-exporter|neo4j-metrics|minio-metrics|ollama-metrics|kafka-exporter|argocd-.*metrics\"}",
+                "legendFormat": "{{job}}"
+              }
+            ],
+            "fieldConfig": {
+              "defaults": {
+                "mappings": [
+                  {"options": {"0": {"text": "DOWN", "color": "red"}}, "type": "value"},
+                  {"options": {"1": {"text": "UP", "color": "green"}}, "type": "value"}
+                ],
+                "thresholds": {
+                  "steps": [
+                    {"color": "red", "value": 0},
+                    {"color": "green", "value": 1}
+                  ]
+                }
+              }
+            },
+            "gridPos": {"h": 8, "w": 24, "x": 0, "y": 0}
+          },
+          {
+            "id": 2,
+            "title": "CPU Usage by Service",
+            "type": "graph",
+            "targets": [
+              {
+                "expr": "rate(container_cpu_usage_seconds_total{namespace=~\"torcal-ml|kafka-system|argocd|keda\", container!=\"POD\", container!=\"\"}[5m]) * 100",
+                "legendFormat": "{{namespace}}/{{pod}}"
+              }
+            ],
+            "yAxes": [
+              {
+                "label": "CPU %",
+                "min": 0
+              }
+            ],
+            "gridPos": {"h": 8, "w": 12, "x": 0, "y": 8}
+          },
+          {
+            "id": 3,
+            "title": "Memory Usage by Service",
+            "type": "graph",
+            "targets": [
+              {
+                "expr": "container_memory_working_set_bytes{namespace=~\"torcal-ml|kafka-system|argocd|keda\", container!=\"POD\", container!=\"\"} / 1024 / 1024",
+                "legendFormat": "{{namespace}}/{{pod}}"
+              }
+            ],
+            "yAxes": [
+              {
+                "label": "Memory (MB)",
+                "min": 0
+              }
+            ],
+            "gridPos": {"h": 8, "w": 12, "x": 12, "y": 8}
+          },
+          {
+            "id": 4,
+            "title": "Network I/O by Namespace",
+            "type": "graph",
+            "targets": [
+              {
+                "expr": "rate(container_network_receive_bytes_total{namespace=~\"torcal-ml|kafka-system|argocd|keda\"}[5m])",
+                "legendFormat": "{{namespace}} - RX"
+              },
+              {
+                "expr": "rate(container_network_transmit_bytes_total{namespace=~\"torcal-ml|kafka-system|argocd|keda\"}[5m])",
+                "legendFormat": "{{namespace}} - TX"
+              }
+            ],
+            "yAxes": [
+              {
+                "label": "Bytes/sec",
+                "min": 0
+              }
+            ],
+            "gridPos": {"h": 8, "w": 24, "x": 0, "y": 16}
+          }
+        ]
+      }
+    }
+
+  postgres-dashboard.json: |
+    {
+      "dashboard": {
+        "id": null,
+        "title": "PostgreSQL Monitoring",
+        "tags": ["postgresql", "database"],
+        "style": "dark",
+        "timezone": "browser",
+        "refresh": "30s",
+        "time": {
+          "from": "now-1h",
+          "to": "now"
+        },
+        "panels": [
+          {
+            "id": 1,
+            "title": "PostgreSQL Connections",
+            "type": "graph",
+            "targets": [
+              {
+                "expr": "pg_stat_activity_count",
+                "legendFormat": "Active Connections"
+              },
+              {
+                "expr": "pg_settings_max_connections",
+                "legendFormat": "Max Connections"
+              }
+            ],
+            "yAxes": [
+              {
+                "label": "Connections",
+                "min": 0
+              }
+            ],
+            "gridPos": {"h": 8, "w": 12, "x": 0, "y": 0}
+          },
+          {
+            "id": 2,
+            "title": "Query Duration",
+            "type": "graph",
+            "targets": [
+              {
+                "expr": "pg_stat_activity_max_tx_duration",
+                "legendFormat": "Max Transaction Duration"
+              }
+            ],
+            "yAxes": [
+              {
+                "label": "Seconds",
+                "min": 0
+              }
+            ],
+            "gridPos": {"h": 8, "w": 12, "x": 12, "y": 0}
+          },
+          {
+            "id": 3,
+            "title": "Database Size",
+            "type": "graph",
+            "targets": [
+              {
+                "expr": "pg_database_size_bytes",
+                "legendFormat": "{{datname}}"
+              }
+            ],
+            "yAxes": [
+              {
+                "label": "Bytes",
+                "min": 0
+              }
+            ],
+            "gridPos": {"h": 8, "w": 24, "x": 0, "y": 8}
+          }
+        ]
+      }
+    }
+
+  kafka-dashboard.json: |
+    {
+      "dashboard": {
+        "id": null,
+        "title": "Kafka Cluster Monitoring",
+        "tags": ["kafka", "messaging"],
+        "style": "dark",
+        "timezone": "browser",
+        "refresh": "30s",
+        "time": {
+          "from": "now-1h",
+          "to": "now"
+        },
+        "panels": [
+          {
+            "id": 1,
+            "title": "Kafka Brokers",
+            "type": "stat",
+            "targets": [
+              {
+                "expr": "kafka_brokers",
+                "legendFormat": "Brokers"
+              }
+            ],
+            "gridPos": {"h": 4, "w": 6, "x": 0, "y": 0}
+          },
+          {
+            "id": 2,
+            "title": "Topics",
+            "type": "stat",
+            "targets": [
+              {
+                "expr": "kafka_topics",
+                "legendFormat": "Topics"
+              }
+            ],
+            "gridPos": {"h": 4, "w": 6, "x": 6, "y": 0}
+          },
+          {
+            "id": 3,
+            "title": "Messages per second",
+            "type": "graph",
+            "targets": [
+              {
+                "expr": "rate(kafka_topic_partition_current_offset[5m])",
+                "legendFormat": "{{topic}}"
+              }
+            ],
+            "yAxes": [
+              {
+                "label": "Messages/sec",
+                "min": 0
+              }
+            ],
+            "gridPos": {"h": 8, "w": 12, "x": 0, "y": 4}
+          },
+          {
+            "id": 4,
+            "title": "Consumer Lag",
+            "type": "graph",
+            "targets": [
+              {
+                "expr": "kafka_consumer_lag_sum",
+                "legendFormat": "{{consumer_group}}"
+              }
+            ],
+            "yAxes": [
+              {
+                "label": "Messages",
+                "min": 0
+              }
+            ],
+            "gridPos": {"h": 8, "w": 12, "x": 12, "y": 4}
+          }
+        ]
+      }
+    }
+
+  argocd-dashboard.json: |
+    {
+      "dashboard": {
+        "id": null,
+        "title": "ArgoCD Monitoring",
+        "tags": ["argocd", "gitops"],
+        "style": "dark",
+        "timezone": "browser",
+        "refresh": "30s",
+        "time": {
+          "from": "now-1h",
+          "to": "now"
+        },
+        "panels": [
+          {
+            "id": 1,
+            "title": "Application Health",
+            "type": "stat",
+            "targets": [
+              {
+                "expr": "argocd_app_health_status",
+                "legendFormat": "{{name}}"
+              }
+            ],
+            "fieldConfig": {
+              "defaults": {
+                "mappings": [
+                  {"options": {"0": {"text": "Unhealthy", "color": "red"}}, "type": "value"},
+                  {"options": {"1": {"text": "Healthy", "color": "green"}}, "type": "value"}
+                ]
+              }
+            },
+            "gridPos": {"h": 8, "w": 12, "x": 0, "y": 0}
+          },
+          {
+            "id": 2,
+            "title": "Sync Status",
+            "type": "stat",
+            "targets": [
+              {
+                "expr": "argocd_app_sync_total",
+                "legendFormat": "{{name}}"
+              }
+            ],
+            "gridPos": {"h": 8, "w": 12, "x": 12, "y": 0}
+          }
+        ]
+      }

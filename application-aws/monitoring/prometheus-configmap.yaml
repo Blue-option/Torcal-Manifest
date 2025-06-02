@@ -1,0 +1,465 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: prometheus-config
+  namespace: monitoring
+data:
+  prometheus.yml: |
+    global:
+      scrape_interval: 15s
+      evaluation_interval: 15s
+    
+    rule_files:
+      - "/etc/prometheus/rules/*.yml"
+    
+    alerting:
+      alertmanagers:
+        - static_configs:
+            - targets:
+              - alertmanager:9093
+    
+    scrape_configs:
+      # Kubernetes API Server
+      - job_name: 'kubernetes-apiservers'
+        kubernetes_sd_configs:
+        - role: endpoints
+        scheme: https
+        tls_config:
+          ca_file: /var/run/secrets/kubernetes.io/serviceaccount/ca.crt
+        bearer_token_file: /var/run/secrets/kubernetes.io/serviceaccount/token
+        relabel_configs:
+        - source_labels: [__meta_kubernetes_namespace, __meta_kubernetes_service_name, __meta_kubernetes_endpoint_port_name]
+          action: keep
+          regex: default;kubernetes;https
+      
+      # Kubernetes Nodes
+      - job_name: 'kubernetes-nodes'
+        kubernetes_sd_configs:
+        - role: node
+        scheme: https
+        tls_config:
+          ca_file: /var/run/secrets/kubernetes.io/serviceaccount/ca.crt
+        bearer_token_file: /var/run/secrets/kubernetes.io/serviceaccount/token
+        relabel_configs:
+        - action: labelmap
+          regex: __meta_kubernetes_node_label_(.+)
+        - target_label: __address__
+          replacement: kubernetes.default.svc:443
+        - source_labels: [__meta_kubernetes_node_name]
+          regex: (.+)
+          target_label: __metrics_path__
+          replacement: /api/v1/nodes/${1}/proxy/metrics
+      
+      # cAdvisor for container metrics
+      - job_name: 'kubernetes-cadvisor'
+        kubernetes_sd_configs:
+        - role: node
+        scheme: https
+        tls_config:
+          ca_file: /var/run/secrets/kubernetes.io/serviceaccount/ca.crt
+        bearer_token_file: /var/run/secrets/kubernetes.io/serviceaccount/token
+        relabel_configs:
+        - action: labelmap
+          regex: __meta_kubernetes_node_label_(.+)
+        - target_label: __address__
+          replacement: kubernetes.default.svc:443
+        - source_labels: [__meta_kubernetes_node_name]
+          regex: (.+)
+          target_label: __metrics_path__
+          replacement: /api/v1/nodes/${1}/proxy/metrics/cadvisor
+
+      # PostgreSQL Exporter
+      - job_name: 'postgres-exporter'
+        static_configs:
+        - targets: ['postgres-exporter.torcal-ml:9187']
+        relabel_configs:
+        - source_labels: [__address__]
+          target_label: instance
+          replacement: 'postgres-torcal-ml'
+
+      # Neo4j Metrics
+      - job_name: 'neo4j-metrics'
+        static_configs:
+        - targets: ['neo4j.torcal-ml:2004']
+        metrics_path: /metrics
+        relabel_configs:
+        - source_labels: [__address__]
+          target_label: instance
+          replacement: 'neo4j-torcal-ml'
+
+      # MinIO Metrics
+      - job_name: 'minio-metrics'
+        static_configs:
+        - targets: ['minio.torcal-ml:9000']
+        metrics_path: /minio/v2/metrics/cluster
+        relabel_configs:
+        - source_labels: [__address__]
+          target_label: instance
+          replacement: 'minio-torcal-ml'
+
+      # Ollama with GPU metrics
+      - job_name: 'ollama-metrics'
+        static_configs:
+        - targets: ['ollama.torcal-ml:11434']
+        metrics_path: /metrics
+        relabel_configs:
+        - source_labels: [__address__]
+          target_label: instance
+          replacement: 'ollama-torcal-ml'
+
+      # Kafka Exporter
+      - job_name: 'kafka-exporter'
+        static_configs:
+        - targets: ['kafka-exporter.kafka-system:9308']
+        relabel_configs:
+        - source_labels: [__address__]
+          target_label: instance
+          replacement: 'kafka-cluster'
+
+      # Kafka JMX Metrics
+      - job_name: 'kafka-jmx'
+        static_configs:
+        - targets: ['kafka-jmx-exporter.kafka-system:5556']
+        relabel_configs:
+        - source_labels: [__address__]
+          target_label: instance
+          replacement: 'kafka-jmx'
+
+      # KEDA Metrics
+      - job_name: 'keda-metrics'
+        static_configs:
+        - targets: ['keda-metrics-apiserver.keda:443']
+        scheme: https
+        tls_config:
+          insecure_skip_verify: true
+        bearer_token_file: /var/run/secrets/kubernetes.io/serviceaccount/token
+        relabel_configs:
+        - source_labels: [__address__]
+          target_label: instance
+          replacement: 'keda-controller'
+
+      # ArgoCD Metrics
+      - job_name: 'argocd-metrics'
+        static_configs:
+        - targets: ['argocd-metrics.argocd:8082']
+        relabel_configs:
+        - source_labels: [__address__]
+          target_label: instance
+          replacement: 'argocd-controller'
+
+      - job_name: 'argocd-server-metrics'
+        static_configs:
+        - targets: ['argocd-server-metrics.argocd:8083']
+        relabel_configs:
+        - source_labels: [__address__]
+          target_label: instance
+          replacement: 'argocd-server'
+
+      - job_name: 'argocd-repo-server-metrics'
+        static_configs:
+        - targets: ['argocd-repo-server.argocd:8084']
+        relabel_configs:
+        - source_labels: [__address__]
+          target_label: instance
+          replacement: 'argocd-repo-server'
+
+      # Application pods with annotations
+      - job_name: 'kubernetes-pods'
+        kubernetes_sd_configs:
+        - role: pod
+        relabel_configs:
+        - source_labels: [__meta_kubernetes_pod_annotation_prometheus_io_scrape]
+          action: keep
+          regex: true
+        - source_labels: [__meta_kubernetes_pod_annotation_prometheus_io_path]
+          action: replace
+          target_label: __metrics_path__
+          regex: (.+)
+        - source_labels: [__address__, __meta_kubernetes_pod_annotation_prometheus_io_port]
+          action: replace
+          regex: ([^:]+)(?::\d+)?;(\d+)
+          replacement: $1:$2
+          target_label: __address__
+        - action: labelmap
+          regex: __meta_kubernetes_pod_label_(.+)
+        - source_labels: [__meta_kubernetes_namespace]
+          action: replace
+          target_label: kubernetes_namespace
+        - source_labels: [__meta_kubernetes_pod_name]
+          action: replace
+          target_label: kubernetes_pod_name
+
+      # All torcal-ml namespace pods
+      - job_name: 'torcal-ml-pods'
+        kubernetes_sd_configs:
+        - role: pod
+          namespaces:
+            names:
+            - torcal-ml
+        relabel_configs:
+        - action: labelmap
+          regex: __meta_kubernetes_pod_label_(.+)
+        - source_labels: [__meta_kubernetes_namespace]
+          action: replace
+          target_label: kubernetes_namespace
+        - source_labels: [__meta_kubernetes_pod_name]
+          action: replace
+          target_label: kubernetes_pod_name
+
+      # Kafka system namespace
+      - job_name: 'kafka-system-pods'
+        kubernetes_sd_configs:
+        - role: pod
+          namespaces:
+            names:
+            - kafka-system
+        relabel_configs:
+        - action: labelmap
+          regex: __meta_kubernetes_pod_label_(.+)
+        - source_labels: [__meta_kubernetes_namespace]
+          action: replace
+          target_label: kubernetes_namespace
+        - source_labels: [__meta_kubernetes_pod_name]
+          action: replace
+          target_label: kubernetes_pod_name
+
+      # ArgoCD namespace
+      - job_name: 'argocd-pods'
+        kubernetes_sd_configs:
+        - role: pod
+          namespaces:
+            names:
+            - argocd
+        relabel_configs:
+        - action: labelmap
+          regex: __meta_kubernetes_pod_label_(.+)
+        - source_labels: [__meta_kubernetes_namespace]
+          action: replace
+          target_label: kubernetes_namespace
+        - source_labels: [__meta_kubernetes_pod_name]
+          action: replace
+          target_label: kubernetes_pod_name
+
+      # KEDA namespace
+      - job_name: 'keda-pods'
+        kubernetes_sd_configs:
+        - role: pod
+          namespaces:
+            names:
+            - keda
+        relabel_configs:
+        - action: labelmap
+          regex: __meta_kubernetes_pod_label_(.+)
+        - source_labels: [__meta_kubernetes_namespace]
+          action: replace
+          target_label: kubernetes_namespace
+        - source_labels: [__meta_kubernetes_pod_name]
+          action: replace
+          target_label: kubernetes_pod_name
+
+  # Enhanced alerting rules
+  alert_rules.yml: |
+    groups:
+    # General Infrastructure Alerts
+    - name: infrastructure-alerts
+      rules:
+      - alert: HighCPUUsage
+        expr: (rate(container_cpu_usage_seconds_total{container!="POD",container!=""}[5m]) * 100) > 80
+        for: 2m
+        labels:
+          severity: warning
+          service: "{{ $labels.kubernetes_namespace }}/{{ $labels.pod }}"
+        annotations:
+          summary: "High CPU usage detected"
+          description: "Pod {{ $labels.pod }} in namespace {{ $labels.kubernetes_namespace }} has CPU usage above 80% for more than 2 minutes. Current value: {{ $value }}%"
+
+      - alert: HighMemoryUsage
+        expr: (container_memory_working_set_bytes{container!="POD",container!=""} / container_spec_memory_limit_bytes * 100) > 80
+        for: 2m
+        labels:
+          severity: warning
+          service: "{{ $labels.kubernetes_namespace }}/{{ $labels.pod }}"
+        annotations:
+          summary: "High memory usage detected"
+          description: "Pod {{ $labels.pod }} in namespace {{ $labels.kubernetes_namespace }} has memory usage above 80% for more than 2 minutes. Current value: {{ $value }}%"
+
+      - alert: PodCrashLooping
+        expr: rate(kube_pod_container_status_restarts_total[1h]) > 0
+        for: 5m
+        labels:
+          severity: critical
+          service: "{{ $labels.namespace }}/{{ $labels.pod }}"
+        annotations:
+          summary: "Pod is crash looping"
+          description: "Pod {{ $labels.pod }} in namespace {{ $labels.namespace }} has restarted more than once in the last hour."
+
+    # PostgreSQL Alerts
+    - name: postgres-alerts
+      rules:
+      - alert: PostgreSQLDown
+        expr: pg_up == 0
+        for: 1m
+        labels:
+          severity: critical
+          service: "postgresql"
+        annotations:
+          summary: "PostgreSQL is down"
+          description: "PostgreSQL instance {{ $labels.instance }} is down."
+
+      - alert: PostgreSQLTooManyConnections
+        expr: sum(pg_stat_activity_count) > 80
+        for: 2m
+        labels:
+          severity: warning
+          service: "postgresql"
+        annotations:
+          summary: "PostgreSQL too many connections"
+          description: "PostgreSQL has {{ $value }} connections, which is approaching the limit."
+
+      - alert: PostgreSQLSlowQueries
+        expr: pg_stat_activity_max_tx_duration > 300
+        for: 5m
+        labels:
+          severity: warning
+          service: "postgresql"
+        annotations:
+          summary: "PostgreSQL slow queries detected"
+          description: "PostgreSQL has queries running for more than 5 minutes."
+
+    # Neo4j Alerts
+    - name: neo4j-alerts
+      rules:
+      - alert: Neo4jDown
+        expr: up{job="neo4j-metrics"} == 0
+        for: 1m
+        labels:
+          severity: critical
+          service: "neo4j"
+        annotations:
+          summary: "Neo4j is down"
+          description: "Neo4j instance {{ $labels.instance }} is not responding."
+
+      - alert: Neo4jHighMemoryUsage
+        expr: (neo4j_memory_used_bytes / neo4j_memory_total_bytes * 100) > 85
+        for: 5m
+        labels:
+          severity: warning
+          service: "neo4j"
+        annotations:
+          summary: "Neo4j high memory usage"
+          description: "Neo4j memory usage is {{ $value }}% on instance {{ $labels.instance }}."
+
+    # MinIO Alerts
+    - name: minio-alerts
+      rules:
+      - alert: MinIODown
+        expr: up{job="minio-metrics"} == 0
+        for: 1m
+        labels:
+          severity: critical
+          service: "minio"
+        annotations:
+          summary: "MinIO is down"
+          description: "MinIO instance {{ $labels.instance }} is not responding."
+
+      - alert: MinIOHighDiskUsage
+        expr: (minio_cluster_disk_used_bytes / minio_cluster_disk_total_bytes * 100) > 85
+        for: 5m
+        labels:
+          severity: warning
+          service: "minio"
+        annotations:
+          summary: "MinIO high disk usage"
+          description: "MinIO disk usage is {{ $value }}% on instance {{ $labels.instance }}."
+
+    # Ollama/GPU Alerts
+    - name: ollama-alerts
+      rules:
+      - alert: OllamaDown
+        expr: up{job="ollama-metrics"} == 0
+        for: 1m
+        labels:
+          severity: critical
+          service: "ollama"
+        annotations:
+          summary: "Ollama is down"
+          description: "Ollama instance {{ $labels.instance }} is not responding."
+
+      - alert: GPUHighUtilization
+        expr: nvidia_gpu_utilization > 95
+        for: 10m
+        labels:
+          severity: warning
+          service: "ollama"
+        annotations:
+          summary: "GPU high utilization"
+          description: "GPU utilization is {{ $value }}% for more than 10 minutes."
+
+      - alert: GPUHighTemperature
+        expr: nvidia_gpu_temperature_celsius > 85
+        for: 5m
+        labels:
+          severity: warning
+          service: "ollama"
+        annotations:
+          summary: "GPU high temperature"
+          description: "GPU temperature is {{ $value }}°C, which is above the safe threshold."
+
+    # Kafka Alerts
+    - name: kafka-alerts
+      rules:
+      - alert: KafkaDown
+        expr: up{job="kafka-exporter"} == 0
+        for: 1m
+        labels:
+          severity: critical
+          service: "kafka"
+        annotations:
+          summary: "Kafka is down"
+          description: "Kafka cluster is not responding."
+
+      - alert: KafkaConsumerLag
+        expr: kafka_consumer_lag_sum > 1000
+        for: 5m
+        labels:
+          severity: warning
+          service: "kafka"
+        annotations:
+          summary: "Kafka consumer lag is high"
+          description: "Consumer group {{ $labels.consumer_group }} has lag of {{ $value }} messages."
+
+    # ArgoCD Alerts
+    - name: argocd-alerts
+      rules:
+      - alert: ArgoCDApplicationOutOfSync
+        expr: argocd_app_health_status != 1
+        for: 5m
+        labels:
+          severity: warning
+          service: "argocd"
+        annotations:
+          summary: "ArgoCD application out of sync"
+          description: "Application {{ $labels.name }} in project {{ $labels.project }} is not in sync."
+
+      - alert: ArgoCDApplicationUnhealthy
+        expr: argocd_app_health_status == 0
+        for: 2m
+        labels:
+          severity: critical
+          service: "argocd"
+        annotations:
+          summary: "ArgoCD application unhealthy"
+          description: "Application {{ $labels.name }} in project {{ $labels.project }} is unhealthy."
+
+    # KEDA Alerts
+    - name: keda-alerts
+      rules:
+      - alert: KEDAScalerError
+        expr: keda_scaler_errors_total > 0
+        for: 5m
+        labels:
+          severity: warning
+          service: "keda"
+        annotations:
+          summary: "KEDA scaler errors detected"
+          description: "KEDA scaler {{ $labels.scaler }} has {{ $value }} errors."

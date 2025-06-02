@@ -13,6 +13,11 @@ spec:
     metadata:
       labels:
         app: neo4j
+        monitoring: "enabled"
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "2004"
+        prometheus.io/path: "/metrics"
     spec:
       serviceAccountName: neo4j-sa
       containers:
@@ -30,6 +35,8 @@ spec:
           name: http
         - containerPort: 7687
           name: bolt
+        - containerPort: 2004
+          name: metrics
         env:
         - name: NEO4J_AUTH
           value: neo4j/password123
@@ -41,6 +48,13 @@ spec:
           value: "0.0.0.0:7687"
         - name: NEO4J_dbms_connector_http_listen__address
           value: "0.0.0.0:7474"
+        # Enable metrics
+        - name: NEO4J_metrics_enabled
+          value: "true"
+        - name: NEO4J_metrics_prometheus_enabled
+          value: "true"
+        - name: NEO4J_metrics_prometheus_endpoint
+          value: "0.0.0.0:2004"
         envFrom:
         - configMapRef:
             name: neo4j-config
@@ -65,7 +79,7 @@ spec:
       resources:
         requests:
           storage: 10Gi
-      storageClassName: gp3
+      storageClassName: standard
   - metadata:
       name: logs
     spec:
@@ -73,7 +87,7 @@ spec:
       resources:
         requests:
           storage: 2Gi
-      storageClassName: gp3
+      storageClassName: standard
   - metadata:
       name: import
     spec:
@@ -81,7 +95,7 @@ spec:
       resources:
         requests:
           storage: 5Gi
-      storageClassName: gp3
+      storageClassName: standard
   - metadata:
       name: plugins
     spec:
@@ -89,4 +103,4 @@ spec:
       resources:
         requests:
           storage: 1Gi
-      storageClassName: gp3
+      storageClassName: standard
