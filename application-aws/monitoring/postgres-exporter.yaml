@@ -25,8 +25,6 @@ spec:
         - containerPort: 9187
           name: metrics
         env:
-        - name: DATA_SOURCE_NAME
-          value: "postgresql://$(POSTGRES_USER):$(POSTGRES_PASSWORD)@postgres:5432/$(POSTGRES_DB)?sslmode=disable"
         - name: POSTGRES_USER
           valueFrom:
             secretKeyRef:
@@ -42,6 +40,13 @@ spec:
             secretKeyRef:
               name: postgres-secret
               key: database
+        # Construir la cadena de conexión usando un script
+        command:
+        - /bin/sh
+        - -c
+        - |
+          export DATA_SOURCE_NAME="postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}?sslmode=disable"
+          exec /bin/postgres_exporter
         resources:
           requests:
             cpu: 100m
