@@ -18,7 +18,7 @@ spec:
         prometheus.io/scrape: "true"
         prometheus.io/port: "9187"
     spec:
-      # Wait for PostgreSQL to be ready
+      # Wait for PostgreSQL to be ready con más tiempo
       initContainers:
       - name: wait-for-postgres
         image: postgres:15-alpine
@@ -48,12 +48,41 @@ spec:
         - /bin/sh
         - -c
         - |
-          echo "Esperando a que PostgreSQL esté disponible..."
+          echo "Esperando a que PostgreSQL esté completamente listo..."
+          
+          # Esperar más tiempo y hacer verificaciones más graduales
+          sleep 10
+          
+          # Verificar que el puerto está abierto
+          until nc -z postgres 5432; do
+            echo "Puerto 5432 no está abierto - esperando..."
+            sleep 3
+          done
+          
+          # Esperar un poco más después de que el puerto esté abierto
+          echo "Puerto abierto, esperando estabilización..."
+          sleep 5
+          
+          # Ahora verificar pg_isready
           until pg_isready -h $PGHOST -p $PGPORT -U $PGUSER -d $PGDATABASE; do
             echo "PostgreSQL no está listo - esperando..."
-            sleep 2
+            sleep 3
           done
-          echo "PostgreSQL está listo!"
+          
+          # Verificación adicional con conexión real
+          echo "PostgreSQL está listo, verificando conexión real..."
+          export PGPASSWORD="$PGPASSWORD"
+          for i in {1..5}; do
+            if psql -h $PGHOST -p $PGPORT -U $PGUSER -d $PGDATABASE -c "SELECT 1;" > /dev/null 2>&1; then
+              echo "Conexión PostgreSQL verificada correctamente"
+              break
+            else
+              echo "Intento $i/5 falló, reintentando en 2 segundos..."
+              sleep 2
+            fi
+          done
+          
+          echo "PostgreSQL completamente listo para conexiones"
       containers:
       - name: postgres-exporter
         image: prometheuscommunity/postgres-exporter:v0.15.0
@@ -76,19 +105,25 @@ spec:
             secretKeyRef:
               name: postgres-secret
               key: database
-        # Usar archivo .pgpass para manejar la contraseña con caracteres especiales
+        # Configuración más conservadora del exporter
+        - name: PG_EXPORTER_WEB_LISTEN_ADDRESS
+          value: ":9187"
+        - name: PG_EXPORTER_WEB_TELEMETRY_PATH
+          value: "/metrics"
+        # Configurar timeouts más largos para evitar conexiones fallidas
+        - name: PG_EXPORTER_CONSTANT_LABELS
+          value: "instance=postgres-torcal-ml"
         command:
         - /bin/sh
         - -c
         - |
-          echo "Configurando conexión segura a PostgreSQL..."
+          echo "Configurando postgres-exporter con conexión estable..."
           
           # Crear archivo .pgpass para manejar la contraseña de forma segura
-          # Formato: hostname:port:database:username:password
           echo "postgres:5432:${POSTGRES_DB}:${POSTGRES_USER}:${POSTGRES_PASSWORD}" > ~/.pgpass
           chmod 600 ~/.pgpass
           
-          # Configurar variables de entorno para PostgreSQL
+          # Configurar variables de entorno que el exporter reconoce
           export PGHOST=postgres
           export PGPORT=5432
           export PGUSER=${POSTGRES_USER}
@@ -96,27 +131,20 @@ spec:
           export PGSSLMODE=disable
           export PGPASSFILE=~/.pgpass
           
-          # DATA_SOURCE_NAME usando formato simple sin contraseña (usa .pgpass)
-          export DATA_SOURCE_NAME="host=postgres port=5432 user=${POSTGRES_USER} dbname=${POSTGRES_DB} sslmode=disable"
+          # DATA_SOURCE_NAME usando formato más compatible
+          export DATA_SOURCE_NAME="host=postgres port=5432 user=${POSTGRES_USER} dbname=${POSTGRES_DB} sslmode=disable connect_timeout=10"
           
-          echo "Conectando a PostgreSQL..."
-          echo "Host: postgres"
-          echo "Puerto: 5432"
-          echo "Usuario: ${POSTGRES_USER}"
-          echo "Base de datos: ${POSTGRES_DB}"
-          echo "SSL: disabled"
+          echo "Configuración completada:"
+          echo "  Host: postgres"
+          echo "  Puerto: 5432"
+          echo "  Usuario: ${POSTGRES_USER}"
+          echo "  Base de datos: ${POSTGRES_DB}"
+          echo "  SSL: disabled"
+          echo "  Timeout: 10 segundos"
           
-          # Verificar conectividad usando netcat en lugar de pg_isready
-          echo "Verificando conectividad de red..."
-          if command -v nc >/dev/null 2>&1; then
-            if nc -z postgres 5432; then
-              echo "Puerto PostgreSQL 5432 está abierto"
-            else
-              echo "Advertencia: No se puede conectar al puerto 5432"
-            fi
-          else
-            echo "netcat no disponible, omitiendo verificación de red"
-          fi
+          # Esperar un poco más antes de iniciar para evitar conexiones prematuras
+          echo "Esperando 5 segundos adicionales antes de iniciar..."
+          sleep 5
           
           echo "Iniciando postgres_exporter..."
           exec /bin/postgres_exporter
@@ -127,17 +155,20 @@ spec:
           limits:
             cpu: 200m
             memory: 256Mi
+        # Probes más conservadores
         livenessProbe:
           httpGet:
             path: /metrics
             port: 9187
-          initialDelaySeconds: 60
-          periodSeconds: 30
+          initialDelaySeconds: 90  # Más tiempo inicial
+          periodSeconds: 60       # Menos frecuente
           timeoutSeconds: 10
+          failureThreshold: 3
         readinessProbe:
           httpGet:
             path: /metrics
             port: 9187
-          initialDelaySeconds: 15
-          periodSeconds: 10
-          timeoutSeconds: 5
+          initialDelaySeconds: 30
+          periodSeconds: 15
+          timeoutSeconds: 10
+          failureThreshold: 2
