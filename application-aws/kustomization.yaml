@@ -27,16 +27,16 @@ resources:
   - minio/minio-init-job.yaml
   - secrets/minio-secret.yaml
   - almacenamiento/storage-class.yaml
-  - monitoring/service-monitors.yaml
-  - monitoring/postgres-exporter-service.yaml
-  - monitoring/postgres-exporter.yaml
-  - monitoring/grafana-dashboard.yaml
-  - monitoring/grafana-configmap.yaml
-  - monitoring/grafana-deployment.yaml
-  - monitoring/grafana-service.yaml
-  - monitoring/namespace.yaml
-  - monitoring/prometheus-deployment.yaml
-  - monitoring/prometheus-service.yaml
-  - monitoring/prometheus-configmap.yaml
-  - monitoring/service-monitors.yaml
-  - monitoring/argocd-servicemonitor.yaml
+ # - monitoring/service-monitors.yaml
+ # - monitoring/postgres-exporter-service.yaml
+ # - monitoring/postgres-exporter.yaml
+ # - monitoring/grafana-dashboard.yaml
+ # - monitoring/grafana-configmap.yaml
+ # - monitoring/grafana-deployment.yaml
+ # - monitoring/grafana-service.yaml
+ # - monitoring/namespace.yaml
+ # - monitoring/prometheus-deployment.yaml
+ # - monitoring/prometheus-service.yaml
+ # - monitoring/prometheus-configmap.yaml
+ # - monitoring/service-monitors.yaml
+ # - monitoring/argocd-servicemonitor.yaml
