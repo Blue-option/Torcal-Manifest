@@ -42,6 +42,8 @@ spec:
             secretKeyRef:
               name: postgres-secret
               key: database
+        - name: PGSSLMODE
+          value: "disable"
         command:
         - /bin/sh
         - -c
@@ -59,9 +61,6 @@ spec:
         - containerPort: 9187
           name: metrics
         env:
-        # Usar el formato de conexión PostgreSQL nativo (key=value)
-        - name: DATA_SOURCE_NAME
-          value: "host=postgres port=5432 user=$(POSTGRES_USER) password=$(POSTGRES_PASSWORD) dbname=$(POSTGRES_DB) sslmode=disable"
         - name: POSTGRES_USER
           valueFrom:
             secretKeyRef:
@@ -77,14 +76,45 @@ spec:
             secretKeyRef:
               name: postgres-secret
               key: database
-        # Expandir variables en DATA_SOURCE_NAME
+        # Usar archivo .pgpass para manejar la contraseña con caracteres especiales
         command:
         - /bin/sh
         - -c
         - |
-          # Expandir las variables de entorno en DATA_SOURCE_NAME
-          export DATA_SOURCE_NAME="host=postgres port=5432 user=${POSTGRES_USER} password=${POSTGRES_PASSWORD} dbname=${POSTGRES_DB} sslmode=disable"
-          echo "Conectando a PostgreSQL con DSN: host=postgres port=5432 user=${POSTGRES_USER} dbname=${POSTGRES_DB} sslmode=disable"
+          echo "Configurando conexión segura a PostgreSQL..."
+          
+          # Crear archivo .pgpass para manejar la contraseña de forma segura
+          # Formato: hostname:port:database:username:password
+          echo "postgres:5432:${POSTGRES_DB}:${POSTGRES_USER}:${POSTGRES_PASSWORD}" > ~/.pgpass
+          chmod 600 ~/.pgpass
+          
+          # Configurar variables de entorno para PostgreSQL
+          export PGHOST=postgres
+          export PGPORT=5432
+          export PGUSER=${POSTGRES_USER}
+          export PGDATABASE=${POSTGRES_DB}
+          export PGSSLMODE=disable
+          export PGPASSFILE=~/.pgpass
+          
+          # DATA_SOURCE_NAME usando formato simple sin contraseña (usa .pgpass)
+          export DATA_SOURCE_NAME="host=postgres port=5432 user=${POSTGRES_USER} dbname=${POSTGRES_DB} sslmode=disable"
+          
+          echo "Conectando a PostgreSQL..."
+          echo "Host: postgres"
+          echo "Puerto: 5432"
+          echo "Usuario: ${POSTGRES_USER}"
+          echo "Base de datos: ${POSTGRES_DB}"
+          echo "SSL: disabled"
+          
+          # Verificar conexión antes de iniciar el exporter
+          if pg_isready -h postgres -p 5432 -U ${POSTGRES_USER} -d ${POSTGRES_DB}; then
+            echo "Conexión PostgreSQL verificada correctamente"
+          else
+            echo "Error: No se puede conectar a PostgreSQL"
+            exit 1
+          fi
+          
+          echo "Iniciando postgres_exporter..."
           exec /bin/postgres_exporter
         resources:
           requests:
