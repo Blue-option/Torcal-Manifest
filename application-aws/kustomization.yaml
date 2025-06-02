@@ -61,15 +61,14 @@ resources:
   - monitoring/prometheus-configmap.yaml
   - monitoring/grafana-configmap.yaml
   - monitoring/grafana-dashboard.yaml
-  - monitoring/alertmanager-config.yaml
+ 
   
   # Core monitoring services
   - monitoring/prometheus-deployment.yaml
   - monitoring/prometheus-service.yaml
   - monitoring/grafana-deployment.yaml
   - monitoring/grafana-service.yaml
-  - monitoring/alertmanager-deployment.yaml
-  - monitoring/alertmanager-service.yaml
+
   
   # System metrics exporters
   - monitoring/node-exporter-daemonset.yaml
