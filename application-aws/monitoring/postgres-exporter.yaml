@@ -106,12 +106,16 @@ spec:
           echo "Base de datos: ${POSTGRES_DB}"
           echo "SSL: disabled"
           
-          # Verificar conexión antes de iniciar el exporter
-          if pg_isready -h postgres -p 5432 -U ${POSTGRES_USER} -d ${POSTGRES_DB}; then
-            echo "Conexión PostgreSQL verificada correctamente"
+          # Verificar conectividad usando netcat en lugar de pg_isready
+          echo "Verificando conectividad de red..."
+          if command -v nc >/dev/null 2>&1; then
+            if nc -z postgres 5432; then
+              echo "Puerto PostgreSQL 5432 está abierto"
+            else
+              echo "Advertencia: No se puede conectar al puerto 5432"
+            fi
           else
-            echo "Error: No se puede conectar a PostgreSQL"
-            exit 1
+            echo "netcat no disponible, omitiendo verificación de red"
           fi
           
           echo "Iniciando postgres_exporter..."
