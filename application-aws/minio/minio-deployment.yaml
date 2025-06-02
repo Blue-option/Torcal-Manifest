@@ -13,6 +13,11 @@ spec:
     metadata:
       labels:
         app: minio
+        monitoring: "enabled"
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "9000"
+        prometheus.io/path: "/minio/v2/metrics/cluster"
     spec:
       serviceAccountName: minio-sa
       containers:
@@ -50,6 +55,9 @@ spec:
           value: "on"
         - name: MINIO_DISK_USAGE_THRESHOLD
           value: "98"
+        # Enable Prometheus metrics
+        - name: MINIO_PROMETHEUS_AUTH_TYPE
+          value: "public"
         volumeMounts:
         - name: data
           mountPath: /data
@@ -61,6 +69,12 @@ spec:
           periodSeconds: 30
           timeoutSeconds: 20
           failureThreshold: 3
+        readinessProbe:
+          httpGet:
+            path: /minio/health/ready
+            port: api
+          initialDelaySeconds: 5
+          periodSeconds: 10
   volumeClaimTemplates:
   - metadata:
       name: data

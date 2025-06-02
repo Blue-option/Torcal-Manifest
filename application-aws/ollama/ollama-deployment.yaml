@@ -12,8 +12,13 @@ spec:
     metadata:
       labels:
         app: ollama
+        monitoring: "enabled"
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "11434"
+        prometheus.io/path: "/metrics"
     spec:
-      serviceAccountName: ollama-sa  # Añadir ServiceAccount
+      serviceAccountName: ollama-sa
       securityContext:
         runAsNonRoot: true
         runAsUser: 1000
@@ -32,7 +37,7 @@ spec:
             drop:
               - ALL
             add:
-              - SYS_RESOURCE  # Necesario para GPU
+              - SYS_RESOURCE
         env:
         - name: OLLAMA_NUM_PARALLEL
           value: "1"
@@ -52,8 +57,12 @@ spec:
           value: "/home/ollama"
         - name: OLLAMA_MODELS
           value: "/home/ollama/.ollama/models"
+        # Enable debug mode for metrics
+        - name: OLLAMA_DEBUG
+          value: "1"
         ports:
         - containerPort: 11434
+          name: http
         command: ["/bin/sh"]
         args: 
           - "-c"
@@ -80,6 +89,19 @@ spec:
           mountPath: /home/ollama
         - name: tmp
           mountPath: /tmp
+        livenessProbe:
+          httpGet:
+            path: /api/tags
+            port: 11434
+          initialDelaySeconds: 60
+          periodSeconds: 30
+          timeoutSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /api/tags
+            port: 11434
+          initialDelaySeconds: 30
+          periodSeconds: 10
       volumes:
       - name: ollama-home
         emptyDir: {}

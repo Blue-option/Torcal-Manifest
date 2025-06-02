@@ -5,6 +5,7 @@ metadata:
   namespace: torcal-ml
   labels:
     app: neo4j
+    monitoring: "enabled"
 spec:
   clusterIP: None
   ports:
@@ -12,5 +13,7 @@ spec:
     name: http
   - port: 7687
     name: bolt
+  - port: 2004
+    name: metrics
   selector:
     app: neo4j

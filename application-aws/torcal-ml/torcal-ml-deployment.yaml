@@ -12,6 +12,11 @@ spec:
     metadata:
       labels:
         app: torcal-ml
+        monitoring: "enabled"
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "8000"
+        prometheus.io/path: "/metrics"
     spec:
       serviceAccountName: torcal-ml-sa
       containers:
@@ -30,6 +35,9 @@ spec:
             cpu: "4000m"
         ports:
         - containerPort: 8000
+          name: http
+        - containerPort: 8001
+          name: metrics
         env:
         - name: OLLAMA_URL
           value: "http://ollama:11434"
@@ -84,6 +92,11 @@ spec:
           value: "torcal-models"
         - name: MINIO_DATA_BUCKET
           value: "torcal-data"
+        # Enable metrics
+        - name: ENABLE_METRICS
+          value: "true"
+        - name: METRICS_PORT
+          value: "8001"
         readinessProbe:
           httpGet:
             path: /docs
@@ -100,4 +113,3 @@ spec:
       - name: env-config
         configMap:
           name: torcal-ml-env-config
-     

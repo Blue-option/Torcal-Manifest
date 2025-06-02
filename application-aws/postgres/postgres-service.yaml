@@ -5,6 +5,7 @@ metadata:
   namespace: torcal-ml
   labels:
     app: postgres
+    monitoring: "enabled"
 spec:
   clusterIP: None
   ports:

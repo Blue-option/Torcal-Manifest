@@ -13,6 +13,7 @@ spec:
     metadata:
       labels:
         app: postgres
+        monitoring: "enabled"
     spec:
       serviceAccountName: postgres-sa
       containers:
@@ -48,6 +49,22 @@ spec:
         volumeMounts:
         - name: data
           mountPath: /var/lib/postgresql/data
+        readinessProbe:
+          exec:
+            command:
+            - /bin/sh
+            - -c
+            - pg_isready -U $POSTGRES_USER -d $POSTGRES_DB
+          initialDelaySeconds: 30
+          periodSeconds: 10
+        livenessProbe:
+          exec:
+            command:
+            - /bin/sh
+            - -c
+            - pg_isready -U $POSTGRES_USER -d $POSTGRES_DB
+          initialDelaySeconds: 60
+          periodSeconds: 10
   volumeClaimTemplates:
   - metadata:
       name: data
