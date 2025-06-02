@@ -52,39 +52,39 @@ resources:
   # ========================================
   
   # Monitoring namespace
-  - monitoring/namespace.yaml
+  #- monitoring/namespace.yaml
   
   # Monitoring RBAC
-  - monitoring/rbac.yaml
+  #- monitoring/rbac.yaml
   
   # Monitoring configurations
-  - monitoring/prometheus-configmap.yaml
-  - monitoring/grafana-configmap.yaml
-  - monitoring/grafana-dashboard.yaml
+  #- monitoring/prometheus-configmap.yaml
+  #- monitoring/grafana-configmap.yaml
+  #- monitoring/grafana-dashboard.yaml
  
   
   # Core monitoring services
-  - monitoring/prometheus-deployment.yaml
-  - monitoring/prometheus-service.yaml
-  - monitoring/grafana-deployment.yaml
-  - monitoring/grafana-service.yaml
+  #- monitoring/prometheus-deployment.yaml
+  #- monitoring/prometheus-service.yaml
+  #- monitoring/grafana-deployment.yaml
+  #- monitoring/grafana-service.yaml
 
   
   # System metrics exporters
-  - monitoring/node-exporter-daemonset.yaml
-  - monitoring/kube-state-metrics-deployment.yaml
-  - monitoring/kube-state-metrics-service.yaml
+  #- monitoring/node-exporter-daemonset.yaml
+  #- monitoring/kube-state-metrics-deployment.yaml
+  #- monitoring/kube-state-metrics-service.yaml
   
   # GPU monitoring
-  - monitoring/nvidia-gpu-exporter.yaml
-  - monitoring/nvidia-gpu-exporter-service.yaml
+  #- monitoring/nvidia-gpu-exporter.yaml
+  #- monitoring/nvidia-gpu-exporter-service.yaml
   
   # Application-specific exporters
-  - monitoring/postgres-exporter.yaml
-  - monitoring/postgres-exporter-service.yaml
+  #- monitoring/postgres-exporter.yaml
+  #- monitoring/postgres-exporter-service.yaml
   
   # ArgoCD metrics services
-  - monitoring/argocd-servicemonitor.yaml
+  #- monitoring/argocd-servicemonitor.yaml
   
   # Network policies
-  - monitoring/network-policies.yaml
+  #- monitoring/network-policies.yaml
