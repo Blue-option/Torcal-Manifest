@@ -13,7 +13,6 @@ spec:
     metadata:
       labels:
         app: postgres
-        monitoring: enabled 
     spec:
       serviceAccountName: postgres-sa
       containers:
