@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: nvidia-gpu-exporter
+  namespace: monitoring
+  labels:
+    app: nvidia-gpu-exporter
+spec:
+  clusterIP: None
+  ports:
+  - name: metrics
+    port: 9445
+    targetPort: 9445
+  selector:
+    app: nvidia-gpu-exporter

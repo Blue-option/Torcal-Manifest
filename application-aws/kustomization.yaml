@@ -1,42 +1,91 @@
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
+
 resources:
+  # Base infrastructure
   - namespace.yaml
+  
+  # Storage for AWS
+  - almacenamiento/storage-class.yaml
+  
+  # PostgreSQL
   - postgres/postgres-deployment.yaml
   - postgres/postgres-service.yaml
+  
+  # Neo4j with monitoring enabled
   - neo4j/neo4j-deployment.yaml
   - neo4j/neo4j-service.yaml
   - neo4j/neo4j-configmap.yaml
+  
+  # Torcal-ML Application
   - torcal-ml/torcal-ml-deployment.yaml
   - torcal-ml/torcal-ml-service.yaml
   - torcal-ml/torcal-ml-configmap.yaml
   - torcal-ml/torcal-ml-ingress.yaml
-  #- torcal-ml/torcal-ml-fe-config.yaml
+  
+  # Ollama
   - ollama/ollama-deployment.yaml
   - ollama/ollama-service.yaml
   - ollama/ollama-pvc.yaml
-  #- keda-scaler/ollama-scaler.yaml
+  
+  # KEDA Scaler (descomenta si lo necesitas)
+  # - keda-scaler/ollama-scaler.yaml
+  
+  # RBAC
   - rbac/roles.yaml
   - rbac/rolebindings.yaml
-  - rbac/serviceaccounts.yaml  
+  - rbac/serviceaccounts.yaml
+  
+  # Secrets
   - secrets/api-tokens.yaml
   - secrets/neo4j-secret.yaml
   - secrets/postgres-secret.yaml
+  - secrets/minio-secret.yaml
+  
+  # MinIO
   - minio/minio-deployment.yaml
   - minio/minio-service.yaml
   - minio/minio-init-job.yaml
-  - secrets/minio-secret.yaml
-  - almacenamiento/storage-class.yaml
- # - monitoring/service-monitors.yaml
- # - monitoring/postgres-exporter-service.yaml
- # - monitoring/postgres-exporter.yaml
- # - monitoring/grafana-dashboard.yaml
- # - monitoring/grafana-configmap.yaml
- # - monitoring/grafana-deployment.yaml
- # - monitoring/grafana-service.yaml
- # - monitoring/namespace.yaml
- # - monitoring/prometheus-deployment.yaml
- # - monitoring/prometheus-service.yaml
- # - monitoring/prometheus-configmap.yaml
- # - monitoring/service-monitors.yaml
- # - monitoring/argocd-servicemonitor.yaml
+  
+  # ========================================
+  # SISTEMA DE MONITOREO INTEGRADO
+  # ========================================
+  
+  # Monitoring namespace
+  - monitoring/namespace.yaml
+  
+  # Monitoring RBAC
+  - monitoring/rbac.yaml
+  
+  # Monitoring configurations
+  - monitoring/prometheus-configmap.yaml
+  - monitoring/grafana-configmap.yaml
+  - monitoring/grafana-dashboard.yaml
+  - monitoring/alertmanager-config.yaml
+  
+  # Core monitoring services
+  - monitoring/prometheus-deployment.yaml
+  - monitoring/prometheus-service.yaml
+  - monitoring/grafana-deployment.yaml
+  - monitoring/grafana-service.yaml
+  - monitoring/alertmanager-deployment.yaml
+  - monitoring/alertmanager-service.yaml
+  
+  # System metrics exporters
+  - monitoring/node-exporter-daemonset.yaml
+  - monitoring/kube-state-metrics-deployment.yaml
+  - monitoring/kube-state-metrics-service.yaml
+  
+  # GPU monitoring
+  - monitoring/nvidia-gpu-exporter.yaml
+  - monitoring/nvidia-gpu-exporter-service.yaml
+  
+  # Application-specific exporters
+  - monitoring/postgres-exporter.yaml
+  - monitoring/postgres-exporter-service.yaml
+  
+  # ArgoCD metrics services
+  - monitoring/argocd-servicemonitor.yaml
+  
+  # Network policies
+  - monitoring/network-policies.yaml

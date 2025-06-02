@@ -1,0 +1,67 @@
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-monitoring-scraping
+  namespace: monitoring
+spec:
+  podSelector: {}
+  policyTypes:
+  - Egress
+  egress:
+  - to: []
+    ports:
+    - protocol: TCP
+      port: 8080   # kube-state-metrics
+    - protocol: TCP
+      port: 9100   # node-exporter
+    - protocol: TCP
+      port: 9187   # postgres-exporter
+    - protocol: TCP
+      port: 9445   # gpu-exporter
+    - protocol: TCP
+      port: 443    # kubernetes-api
+    - protocol: TCP
+      port: 10250  # kubelet
+    - protocol: TCP
+      port: 2004   # neo4j-metrics
+    - protocol: TCP
+      port: 9000   # minio-metrics
+    - protocol: TCP
+      port: 11434  # ollama
+    - protocol: TCP
+      port: 8082   # argocd-controller
+    - protocol: TCP
+      port: 8083   # argocd-server
+
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-monitoring-access
+  namespace: torcal-ml
+spec:
+  podSelector: {}
+  policyTypes:
+  - Ingress
+  ingress:
+  - from:
+    - namespaceSelector:
+        matchLabels:
+          name: monitoring
+    ports:
+    - protocol: TCP
+      port: 8000   # torcal-ml
+    - protocol: TCP
+      port: 11434  # ollama
+    - protocol: TCP
+      port: 5432   # postgres
+    - protocol: TCP
+      port: 9187   # postgres-exporter
+    - protocol: TCP
+      port: 7474   # neo4j
+    - protocol: TCP
+      port: 2004   # neo4j-metrics
+    - protocol: TCP
+      port: 9000   # minio
+    - protocol: TCP
+      port: 9001   # minio-console
