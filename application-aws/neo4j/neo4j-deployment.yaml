@@ -79,7 +79,7 @@ spec:
       resources:
         requests:
           storage: 10Gi
-      storageClassName: standard
+      storageClassName: gp3
   - metadata:
       name: logs
     spec:
@@ -87,7 +87,7 @@ spec:
       resources:
         requests:
           storage: 2Gi
-      storageClassName: standard
+      storageClassName: gp3
   - metadata:
       name: import
     spec:
@@ -95,7 +95,7 @@ spec:
       resources:
         requests:
           storage: 5Gi
-      storageClassName: standard
+      storageClassName: gp3
   - metadata:
       name: plugins
     spec:
@@ -103,4 +103,4 @@ spec:
       resources:
         requests:
           storage: 1Gi
-      storageClassName: standard
+      storageClassName: gp3
