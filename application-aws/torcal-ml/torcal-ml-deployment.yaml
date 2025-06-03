@@ -28,10 +28,10 @@ spec:
           subPath: .env
         resources:
           limits:
-            memory: "24Gi"
-            cpu: "5000m"
-          requests:
             memory: "16Gi"
+            cpu: "6000m"
+          requests:
+            memory: "12Gi"
             cpu: "4000m"
         ports:
         - containerPort: 8000
