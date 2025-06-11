@@ -3,6 +3,8 @@ kind: Service
 metadata:
   name: torcal-ml-2
   namespace: torcal-ml
+  metadata:
+   service.beta.kubernetes.io/aws-load-balancer-name: a7f69878f84da4e3c891da3a8496c9e1-436687380.eu-west-1.elb.amazonaws.com
 spec:
   selector:
     app: torcal-ml
