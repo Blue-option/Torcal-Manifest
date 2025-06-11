@@ -3,10 +3,6 @@ kind: Service
 metadata:
   name: torcal-ml
   namespace: torcal-ml
-  annotations:
-    service.beta.kubernetes.io/aws-load-balancer-ssl-cert: arn:aws:acm:eu-west-1:651857781455:certificate/dd21a3ca-9492-4ea3-ad56-425136a3558f
-    service.beta.kubernetes.io/aws-load-balancer-ssl-ports: "443"
-    service.beta.kubernetes.io/aws-load-balancer-backend-protocol: tcp
 spec:
   selector:
     app: torcal-ml
