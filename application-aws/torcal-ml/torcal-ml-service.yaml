@@ -10,7 +10,7 @@ metadata:
     service.beta.kubernetes.io/aws-load-balancer-scheme: internet-facing
     
     # 🔐 Certificado SSL (reemplaza con tu ARN)
-    service.beta.kubernetes.io/aws-load-balancer-ssl-cert: arn:aws:acm:eu-west-1:651857781455:certificate/edf36dde-2e0e-4559-a4bb-6ae7529647ad
+    service.beta.kubernetes.io/aws-load-balancer-ssl-cert: arn:aws:acm:eu-west-1:651857781455:certificate/dd21a3ca-9492-4ea3-ad56-425136a3558f
     
     # 🎯 Configuración SSL
     service.beta.kubernetes.io/aws-load-balancer-ssl-ports: "443"
