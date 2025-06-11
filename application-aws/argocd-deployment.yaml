@@ -17,3 +17,6 @@ spec:
     automated:
       prune: false
       selfHeal: false
+
+k8s-elb-a8ed664336ee44385a020f2fb20516cc
+k8s-elb-a7f69878f84da4e3c891da3a8496c9e1
