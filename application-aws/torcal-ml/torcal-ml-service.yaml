@@ -4,9 +4,20 @@ metadata:
   name: torcal-ml
   namespace: torcal-ml
   annotations:
-    service.beta.kubernetes.io/aws-load-balancer-ssl-cert: arn:aws:acm:eu-west-1:ACCOUNT:certificate/CERTIFICATE-ID
+    # 🔧 Configurar como Network Load Balancer
+    service.beta.kubernetes.io/aws-load-balancer-type: "external"
+    service.beta.kubernetes.io/aws-load-balancer-nlb-target-type: "ip"
+    service.beta.kubernetes.io/aws-load-balancer-scheme: internet-facing
+    
+    # 🔐 Certificado SSL (reemplaza con tu ARN)
+    service.beta.kubernetes.io/aws-load-balancer-ssl-cert: arn:aws:acm:eu-west-1:651857781455:certificate/dd21a3ca-9492-4ea3-ad56-425136a3558f
+    
+    # 🎯 Configuración SSL
     service.beta.kubernetes.io/aws-load-balancer-ssl-ports: "443"
-    service.beta.kubernetes.io/aws-load-balancer-backend-protocol: "tcp"
+    service.beta.kubernetes.io/aws-load-balancer-backend-protocol: tcp
+    
+    # 🌐 DNS automático (opcional)
+    external-dns.alpha.kubernetes.io/hostname: torcal-recommender.blueoption.net
 spec:
   selector:
     app: torcal-ml
