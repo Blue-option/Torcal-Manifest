@@ -110,7 +110,6 @@ spec:
       nodeSelector:
         nvidia.com/gpu: "true"
         node.kubernetes.io/instance-type: "g5.2xlarge"
-        accelerator: "nvidia-a10g"
       tolerations:
       - key: "nvidia.com/gpu"
         operator: "Equal"
