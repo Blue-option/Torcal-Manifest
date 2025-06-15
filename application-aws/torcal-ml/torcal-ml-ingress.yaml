@@ -1,26 +1,76 @@
+# minio-ingress.yaml - Configuración más simple
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: minio-ingress
+  namespace: torcal-ml
+  annotations:
+    alb.ingress.kubernetes.io/scheme: internet-facing
+    alb.ingress.kubernetes.io/target-type: ip
+    alb.ingress.kubernetes.io/group.name: torcal-shared-lb
+    alb.ingress.kubernetes.io/certificate-arn: "arn:aws:acm:eu-west-1:651857781455:certificate/9c429c17-e0d4-4e96-8af4-cf5e685cf1c4"
+    
+    # SSL Configuration
+    alb.ingress.kubernetes.io/ssl-policy: "ELBSecurityPolicy-TLS-1-2-2017-01"
+    alb.ingress.kubernetes.io/listen-ports: '[{"HTTP": 80}, {"HTTPS": 443}]'
+    alb.ingress.kubernetes.io/ssl-redirect: '443'
+    
+    # Performance & Security
+    alb.ingress.kubernetes.io/load-balancer-attributes: |
+      idle_timeout.timeout_seconds=600,
+      routing.http2.enabled=true,
+      access_logs.s3.enabled=false
+spec:
+  ingressClassName: alb
+  rules:
+  - host: minio.torcal-recommender.blueoption.net
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: minio
+            port:
+              number: 9001  # Consola de MinIO
+
+---
+# INGRESS 2: Torcal-ML App  
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: torcal-ml-ingress
   namespace: torcal-ml
   annotations:
-    kubernetes.io/ingress.class: "gce"
-    # Configuraciones para optimizar rendimiento
-    kubernetes.io/ingress.allow-http: "true"
-    networking.gke.io/v1beta1.FrontendConfig: "torcal-ml-frontend-config"
-    # Opcional: para habilitar IP estática
-    # kubernetes.io/ingress.global-static-ip-name: "torcal-ml-ip"
+    alb.ingress.kubernetes.io/scheme: internet-facing
+    alb.ingress.kubernetes.io/target-type: ip
+    # ✨ MISMO GRUPO = MISMO ALB
+    alb.ingress.kubernetes.io/group.name: torcal-shared-lb
+    alb.ingress.kubernetes.io/group.order: '20'
+    alb.ingress.kubernetes.io/certificate-arn: "arn:aws:acm:eu-west-1:651857781455:certificate/e0d07d6a-42eb-4ef5-8707-2e764442d604"
+    
+    # SSL Configuration
+    alb.ingress.kubernetes.io/ssl-policy: "ELBSecurityPolicy-TLS-1-2-2017-01"
+    alb.ingress.kubernetes.io/listen-ports: '[{"HTTP": 80}, {"HTTPS": 443}]'
+    alb.ingress.kubernetes.io/ssl-redirect: '443'
+    
+    # Performance & Security
+    alb.ingress.kubernetes.io/load-balancer-attributes: |
+      idle_timeout.timeout_seconds=600,
+      routing.http2.enabled=true,
+      access_logs.s3.enabled=false
 spec:
+  ingressClassName: alb
   rules:
-  - http:
+  - host: api.torcal-recommender.blueoption.net
+    http:
       paths:
       - path: /
         pathType: Prefix
         backend:
           service:
-            name: torcal-ml
+            name: torcal-ml-2
             port:
               number: 80
-  # Opcional: habilitar HTTPS
-  # tls:
-  # - secretName: torcal-ml-tls-cert
+---
+
