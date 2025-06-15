@@ -46,6 +46,9 @@ resources:
   - minio/minio-deployment.yaml
   - minio/minio-service.yaml
   - minio/minio-init-job.yaml
+
+  # Ingress
+  - ingress/ingress.yaml
   
   # ========================================
   # SISTEMA DE MONITOREO INTEGRADO
