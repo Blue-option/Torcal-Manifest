@@ -34,7 +34,7 @@ spec:
           /usr/bin/mc anonymous set download myminio/torcal-models
           /usr/bin/mc anonymous set download myminio/torcal-data
           
-          echo 'MinIO buckets created and configured successfully'
+          echo 'MinIOO buckets created and configured successfully'
         env:
         - name: MINIO_ROOT_USER
           valueFrom:
