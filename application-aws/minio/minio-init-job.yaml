@@ -18,7 +18,7 @@ spec:
           sleep 90
           
           # Configure MinIO client
-          /usr/bin/mc config host add myminio http://minio:9000 $MINIO_ROOT_USER $MINIO_ROOT_PASSWORD
+          /usr/bin/mc config host add myminio https://minio.torcal-recommender.blueoption.net $MINIO_ROOT_USER $MINIO_ROOT_PASSWORD
           
           # Create buckets
           /usr/bin/mc mb -p myminio/torcal-models
@@ -31,8 +31,8 @@ spec:
           /usr/bin/mc mb -p myminio/torcal-models/logs/
           
           # Configure access policies
-          /usr/bin/mc anonymous set download myminio/torcal-models
-          /usr/bin/mc anonymous set download myminio/torcal-data
+          /usr/bin/mc anonymous set public myminio/torcal-models
+          /usr/bin/mc anonymous set public myminio/torcal-data
           
           echo 'MinIOO buckets created and configured successfully'
         env:
