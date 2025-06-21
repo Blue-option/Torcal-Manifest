@@ -1,0 +1,18 @@
+apiVersion: kafka.strimzi.io/v1beta2
+kind: KafkaTopic
+metadata:
+  name: torcal-gpu-trigger
+  namespace: kafka-system
+  labels:
+    strimzi.io/cluster: kafka-cluster
+    app.kubernetes.io/name: kafka-topic
+    app.kubernetes.io/managed-by: argocd
+spec:
+  partitions: 1
+  replicas: 1
+  config:
+    retention.ms: 86400000
+    segment.ms: 86400000
+    cleanup.policy: delete
+    max.message.bytes: 1048576
+    compression.type: snappy

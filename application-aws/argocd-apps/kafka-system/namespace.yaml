@@ -1,0 +1,8 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: kafka-system
+  labels:
+    name: kafka-system
+    app.kubernetes.io/name: kafka-system
+    app.kubernetes.io/managed-by: argocd

@@ -29,7 +29,7 @@ resources:
   - ollama/ollama-pvc.yaml
   
   # KEDA Scaler (descomenta si lo necesitas)
-  # - keda-scaler/ollama-scaler.yaml
+  - keda-scaler/ollama-scaler.yaml
   
   # RBAC
   - rbac/roles.yaml
@@ -46,6 +46,11 @@ resources:
   - minio/minio-deployment.yaml
   - minio/minio-service.yaml
   - minio/minio-init-job.yaml
+
+  # ArgoCD Applications
+  - argocd-apps/strimzi-operator-app.yaml
+  - argocd-apps/kafka-system-app.yaml
+  - argocd-apps/keda-system-app.yaml
 
   # Ingress
   #- ingress/ingress.yaml

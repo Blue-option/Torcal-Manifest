@@ -1,0 +1,59 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: keda-operator
+  namespace: keda
+spec:
+  template:
+    spec:
+      nodeSelector:
+        role: general
+      containers:
+      - name: keda-operator
+        resources:
+          requests:
+            cpu: 50m
+            memory: 128Mi
+          limits:
+            cpu: 200m  
+            memory: 256Mi
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: keda-metrics-apiserver
+  namespace: keda
+spec:
+  template:
+    spec:
+      nodeSelector:
+        role: general
+      containers:
+      - name: keda-metrics-apiserver
+        resources:
+          requests:
+            cpu: 50m
+            memory: 128Mi
+          limits:
+            cpu: 200m
+            memory: 256Mi
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: keda-admission-webhooks
+  namespace: keda
+spec:
+  template:
+    spec:
+      nodeSelector:
+        role: general
+      containers:
+      - name: keda-admission-webhooks
+        resources:
+          requests:
+            cpu: 50m
+            memory: 128Mi
+          limits:
+            cpu: 200m
+            memory: 256Mi
