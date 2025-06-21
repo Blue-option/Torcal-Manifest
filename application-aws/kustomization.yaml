@@ -48,9 +48,9 @@ resources:
   - minio/minio-init-job.yaml
 
   # ArgoCD Applications
-  - argocd-apps/strimzi-operator-app.yaml
-  - argocd-apps/kafka-system-app.yaml
-  - argocd-apps/keda-system-app.yaml
+  #- argocd-apps/strimzi-operator-app.yaml
+  - argocd-apps/kafka-cluster-app.yaml
+  #- argocd-apps/keda-system-app.yaml
 
   # Ingress
   #- ingress/ingress.yaml
