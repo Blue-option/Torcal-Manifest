@@ -1,10 +1,10 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: kafka-system
+  name: keda-system
   namespace: argocd
   labels:
-    app.kubernetes.io/name: kafka-system
+    app.kubernetes.io/name: keda-system
     app.kubernetes.io/managed-by: argocd
   finalizers:
     - resources-finalizer.argocd.argoproj.io
@@ -13,10 +13,10 @@ spec:
   source:
     repoURL: https://github.com/Blue-option/Torcal-Manifest
     targetRevision: main
-    path: application-aws/kafka-system
+    path: application-aws/keda-system
   destination:
     server: https://kubernetes.default.svc
-    namespace: kafka-system
+    namespace: keda
   syncPolicy:
     automated:
       prune: true
