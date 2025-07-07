@@ -13,7 +13,7 @@ spec:
     metadata:
       labels:
         app: postgres
-        monitoring: enabled 
+        monitoring: enabled
     spec:
       serviceAccountName: postgres-sa
       containers:
@@ -51,51 +51,13 @@ spec:
         volumeMounts:
         - name: data
           mountPath: /var/lib/postgresql/data
+        - name: postgres-config
+          mountPath: /etc/postgresql/postgresql.conf
+          subPath: postgresql.conf
         command:
         - postgres
-        args:
-        - "-c"
-        - "shared_buffers=768MB"
-        - "-c"
-        - "max_connections=50"
-        - "-c"
-        - "work_mem=16MB"
-        - "-c"
-        - "maintenance_work_mem=96MB"
-        - "-c"
-        - "effective_cache_size=2GB"
-        - "-c"
-        - "synchronous_commit=off"
-        - "-c"
-        - "wal_buffers=8MB"
-        - "-c"
-        - "max_wal_size=512MB"
-        - "-c"
-        - "min_wal_size=64MB"
-        - "-c"
-        - "random_page_cost=1.5"
-        - "-c"
-        - "effective_io_concurrency=4"
-        - "-c"
-        - "log_min_duration_statement=2000"
-        - "-c"
-        - "log_connections=on"
-        - "-c"
-        - "log_disconnections=on"
-        - "-c"
-        - "autovacuum_max_workers=2"
-        - "-c"
-        - "log_line_prefix=%t [%p]: [%l-1] user=%u,db=%d,app=%a,client=%h "
-        - "-c"
-        - "log_checkpoints=on"
-        - "-c"
-        - "log_lock_waits=on"
-        - "-c"
-        - "idle_in_transaction_session_timeout=30000"
-        - "-c"
-        - "statement_timeout=60000"
-        - "-c"
-        - "lock_timeout=30000"
+        - -c
+        - config_file=/etc/postgresql/postgresql.conf
         livenessProbe:
           exec:
             command:
@@ -116,11 +78,15 @@ spec:
           periodSeconds: 5
           timeoutSeconds: 3
           failureThreshold: 3
+      volumes:
+      - name: postgres-config
+        configMap:
+          name: postgres-config
   volumeClaimTemplates:
   - metadata:
       name: data
     spec:
-      accessModes: [ "ReadWriteOnce" ]
+      accessModes: ["ReadWriteOnce"]
       resources:
         requests:
           storage: 10Gi
