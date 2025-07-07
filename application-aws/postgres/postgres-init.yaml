@@ -1,0 +1,30 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: postgres-init-config
+  namespace: torcal-ml
+data:
+  init.sql: |
+    -- Configuración optimizada para PostgreSQL
+    ALTER SYSTEM SET shared_buffers = '768MB';
+    ALTER SYSTEM SET max_connections = 50;
+    ALTER SYSTEM SET work_mem = '16MB';
+    ALTER SYSTEM SET maintenance_work_mem = '96MB';
+    ALTER SYSTEM SET effective_cache_size = '2GB';
+    ALTER SYSTEM SET synchronous_commit = off;
+    ALTER SYSTEM SET wal_buffers = '8MB';
+    ALTER SYSTEM SET max_wal_size = '512MB';
+    ALTER SYSTEM SET min_wal_size = '64MB';
+    ALTER SYSTEM SET random_page_cost = 1.5;
+    ALTER SYSTEM SET effective_io_concurrency = 4;
+    ALTER SYSTEM SET log_min_duration_statement = 2000;
+    ALTER SYSTEM SET log_connections = on;
+    ALTER SYSTEM SET log_disconnections = on;
+    ALTER SYSTEM SET autovacuum_max_workers = 2;
+    ALTER SYSTEM SET log_checkpoints = on;
+    ALTER SYSTEM SET log_lock_waits = on;
+    ALTER SYSTEM SET idle_in_transaction_session_timeout = 30000;
+    ALTER SYSTEM SET statement_timeout = 60000;
+    ALTER SYSTEM SET lock_timeout = 30000;
+    ALTER SYSTEM SET log_line_prefix = '%t [%p]: [%l-1] user=%u,db=%d,app=%a,client=%h ';
+    SELECT pg_reload_conf();
