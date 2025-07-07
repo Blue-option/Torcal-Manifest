@@ -35,11 +35,7 @@ spec:
           if [ ! -d "/var/lib/postgresql/data/pgdata" ]; then
             mkdir -p /var/lib/postgresql/data/pgdata
           fi
-          if [ -z "$(ls -A /var/lib/postgresql/data/pgdata)" ]; then
-            echo "Directory is empty, ready for initialization"
-          else
-            echo "Directory already contains data"
-          fi
+          echo "Directory ready for PostgreSQL initialization"
         volumeMounts:
         - name: data
           mountPath: /var/lib/postgresql/data
@@ -84,49 +80,7 @@ spec:
         volumeMounts:
         - name: data
           mountPath: /var/lib/postgresql/data
-        command:
-        - postgres
-        args:
-        - -c
-        - shared_buffers=768MB
-        - -c
-        - max_connections=50
-        - -c
-        - work_mem=16MB
-        - -c
-        - maintenance_work_mem=96MB
-        - -c
-        - effective_cache_size=2GB
-        - -c
-        - synchronous_commit=off
-        - -c
-        - wal_buffers=8MB
-        - -c
-        - max_wal_size=512MB
-        - -c
-        - min_wal_size=64MB
-        - -c
-        - random_page_cost=1.5
-        - -c
-        - effective_io_concurrency=4
-        - -c
-        - log_min_duration_statement=2000
-        - -c
-        - log_connections=on
-        - -c
-        - log_disconnections=on
-        - -c
-        - autovacuum_max_workers=2
-        - -c
-        - log_checkpoints=on
-        - -c
-        - log_lock_waits=on
-        - -c
-        - idle_in_transaction_session_timeout=30000
-        - -c
-        - statement_timeout=60000
-        - -c
-        - lock_timeout=30000
+        # SIN command/args - usa el entrypoint normal de PostgreSQL
         livenessProbe:
           exec:
             command:
