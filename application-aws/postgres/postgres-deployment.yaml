@@ -21,6 +21,28 @@ spec:
         runAsGroup: 999
         fsGroup: 999
         fsGroupChangePolicy: "OnRootMismatch"
+      initContainers:
+      - name: init-postgres-dir
+        image: postgres:15
+        securityContext:
+          runAsUser: 999
+          runAsGroup: 999
+          runAsNonRoot: true
+        command:
+        - /bin/bash
+        - -c
+        - |
+          if [ ! -d "/var/lib/postgresql/data/pgdata" ]; then
+            mkdir -p /var/lib/postgresql/data/pgdata
+          fi
+          if [ -z "$(ls -A /var/lib/postgresql/data/pgdata)" ]; then
+            echo "Directory is empty, ready for initialization"
+          else
+            echo "Directory already contains data"
+          fi
+        volumeMounts:
+        - name: data
+          mountPath: /var/lib/postgresql/data
       containers:
       - name: postgres
         image: postgres:15
@@ -56,15 +78,55 @@ spec:
               name: postgres-secret
               key: database
         - name: PGDATA
-          value: /var/lib/postgresql/data
+          value: /var/lib/postgresql/data/pgdata
         - name: POSTGRES_INITDB_ARGS
           value: "--data-checksums"
         volumeMounts:
         - name: data
           mountPath: /var/lib/postgresql/data
-        - name: init-script
-          mountPath: /docker-entrypoint-initdb.d/init.sql
-          subPath: init.sql
+        command:
+        - postgres
+        args:
+        - -c
+        - shared_buffers=768MB
+        - -c
+        - max_connections=50
+        - -c
+        - work_mem=16MB
+        - -c
+        - maintenance_work_mem=96MB
+        - -c
+        - effective_cache_size=2GB
+        - -c
+        - synchronous_commit=off
+        - -c
+        - wal_buffers=8MB
+        - -c
+        - max_wal_size=512MB
+        - -c
+        - min_wal_size=64MB
+        - -c
+        - random_page_cost=1.5
+        - -c
+        - effective_io_concurrency=4
+        - -c
+        - log_min_duration_statement=2000
+        - -c
+        - log_connections=on
+        - -c
+        - log_disconnections=on
+        - -c
+        - autovacuum_max_workers=2
+        - -c
+        - log_checkpoints=on
+        - -c
+        - log_lock_waits=on
+        - -c
+        - idle_in_transaction_session_timeout=30000
+        - -c
+        - statement_timeout=60000
+        - -c
+        - lock_timeout=30000
         livenessProbe:
           exec:
             command:
@@ -85,10 +147,6 @@ spec:
           periodSeconds: 5
           timeoutSeconds: 3
           failureThreshold: 3
-      volumes:
-      - name: init-script
-        configMap:
-          name: postgres-init-config
   volumeClaimTemplates:
   - metadata:
       name: data
