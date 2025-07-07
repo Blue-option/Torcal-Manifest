@@ -1,7 +1,3 @@
-# ========================================
-# SOLUCIÓN ALTERNATIVA SIMPLE QUE FUNCIONA
-# postgres/postgres-deployment.yaml (REEMPLAZAR)
-# ========================================
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
@@ -50,94 +46,62 @@ spec:
               key: database
         - name: PGDATA
           value: /var/lib/postgresql/data/pgdata
-        # ⭐ AÑADIDO: Variable faltante de Docker Compose
         - name: POSTGRES_INITDB_ARGS
           value: "--data-checksums"
-        # ⭐ AÑADIDO: Configuración directa mediante variables de entorno
-        - name: POSTGRES_SHARED_BUFFERS
-          value: "768MB"
-        - name: POSTGRES_MAX_CONNECTIONS
-          value: "50"
-        - name: POSTGRES_WORK_MEM
-          value: "16MB"
-        - name: POSTGRES_MAINTENANCE_WORK_MEM
-          value: "96MB"
-        - name: POSTGRES_EFFECTIVE_CACHE_SIZE
-          value: "2GB"
-        - name: POSTGRES_SYNCHRONOUS_COMMIT
-          value: "off"
-        - name: POSTGRES_WAL_BUFFERS
-          value: "8MB"
-        - name: POSTGRES_MAX_WAL_SIZE
-          value: "512MB"
-        - name: POSTGRES_MIN_WAL_SIZE
-          value: "64MB"
-        - name: POSTGRES_RANDOM_PAGE_COST
-          value: "1.5"
-        - name: POSTGRES_EFFECTIVE_IO_CONCURRENCY
-          value: "4"
-        - name: POSTGRES_LOG_MIN_DURATION_STATEMENT
-          value: "2000"
-        - name: POSTGRES_LOG_CONNECTIONS
-          value: "on"
-        - name: POSTGRES_LOG_DISCONNECTIONS
-          value: "on"
-        - name: POSTGRES_AUTOVACUUM_MAX_WORKERS
-          value: "2"
         volumeMounts:
         - name: data
           mountPath: /var/lib/postgresql/data
-        # ⭐ COMANDO SIMPLE sin configuración externa
         command:
         - postgres
-        - -c
-        - shared_buffers=768MB
-        - -c
-        - max_connections=50
-        - -c
-        - work_mem=16MB
-        - -c
-        - maintenance_work_mem=96MB
-        - -c
-        - effective_cache_size=2GB
-        - -c
-        - synchronous_commit=off
-        - -c
-        - wal_buffers=8MB
-        - -c
-        - max_wal_size=512MB
-        - -c
-        - min_wal_size=64MB
-        - -c
-        - random_page_cost=1.5
-        - -c
-        - effective_io_concurrency=4
-        - -c
-        - log_min_duration_statement=2000
-        - -c
-        - log_connections=on
-        - -c
-        - log_disconnections=on
-        - -c
-        - autovacuum_max_workers=2
-        - -c
-        - log_line_prefix='%t [%p]: [%l-1] user=%u,db=%d,app=%a,client=%h '
-        - -c
-        - log_checkpoints=on
-        - -c
-        - log_lock_waits=on
-        - -c
-        - idle_in_transaction_session_timeout=30000
-        - -c
-        - statement_timeout=60000
-        - -c
-        - lock_timeout=30000
+        args:
+        - "-c"
+        - "shared_buffers=768MB"
+        - "-c"
+        - "max_connections=50"
+        - "-c"
+        - "work_mem=16MB"
+        - "-c"
+        - "maintenance_work_mem=96MB"
+        - "-c"
+        - "effective_cache_size=2GB"
+        - "-c"
+        - "synchronous_commit=off"
+        - "-c"
+        - "wal_buffers=8MB"
+        - "-c"
+        - "max_wal_size=512MB"
+        - "-c"
+        - "min_wal_size=64MB"
+        - "-c"
+        - "random_page_cost=1.5"
+        - "-c"
+        - "effective_io_concurrency=4"
+        - "-c"
+        - "log_min_duration_statement=2000"
+        - "-c"
+        - "log_connections=on"
+        - "-c"
+        - "log_disconnections=on"
+        - "-c"
+        - "autovacuum_max_workers=2"
+        - "-c"
+        - "log_line_prefix=%t [%p]: [%l-1] user=%u,db=%d,app=%a,client=%h "
+        - "-c"
+        - "log_checkpoints=on"
+        - "-c"
+        - "log_lock_waits=on"
+        - "-c"
+        - "idle_in_transaction_session_timeout=30000"
+        - "-c"
+        - "statement_timeout=60000"
+        - "-c"
+        - "lock_timeout=30000"
         livenessProbe:
           exec:
             command:
-              - /bin/bash
-              - -c
-              - pg_isready -U $POSTGRES_USER -d $POSTGRES_DB
+            - /bin/bash
+            - -c
+            - pg_isready -U $POSTGRES_USER -d $POSTGRES_DB
           initialDelaySeconds: 30
           periodSeconds: 10
           timeoutSeconds: 5
@@ -145,9 +109,9 @@ spec:
         readinessProbe:
           exec:
             command:
-              - /bin/bash
-              - -c
-              - pg_isready -U $POSTGRES_USER -d $POSTGRES_DB
+            - /bin/bash
+            - -c
+            - pg_isready -U $POSTGRES_USER -d $POSTGRES_DB
           initialDelaySeconds: 5
           periodSeconds: 5
           timeoutSeconds: 3
