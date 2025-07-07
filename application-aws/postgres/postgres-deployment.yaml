@@ -46,9 +46,47 @@ spec:
               key: database
         - name: PGDATA
           value: /var/lib/postgresql/data/pgdata
+        # ⭐ AÑADIDO: Variable faltante de Docker Compose
+        - name: POSTGRES_INITDB_ARGS
+          value: "--data-checksums"
         volumeMounts:
         - name: data
           mountPath: /var/lib/postgresql/data
+        # ⭐ AÑADIDO: Montar la configuración personalizada
+        - name: postgres-config
+          mountPath: /etc/postgresql/postgresql.conf
+          subPath: postgresql.conf
+        # ⭐ AÑADIDO: Comando personalizado para usar la configuración
+        command: 
+          - postgres
+          - -c
+          - config_file=/etc/postgresql/postgresql.conf
+        # ⭐ MEJORADO: Health checks más robustos
+        livenessProbe:
+          exec:
+            command:
+              - /bin/bash
+              - -c
+              - pg_isready -U $POSTGRES_USER -d $POSTGRES_DB
+          initialDelaySeconds: 30
+          periodSeconds: 10
+          timeoutSeconds: 5
+          failureThreshold: 3
+        readinessProbe:
+          exec:
+            command:
+              - /bin/bash
+              - -c
+              - pg_isready -U $POSTGRES_USER -d $POSTGRES_DB
+          initialDelaySeconds: 5
+          periodSeconds: 5
+          timeoutSeconds: 3
+          failureThreshold: 3
+      # ⭐ AÑADIDO: Volumen para la configuración
+      volumes:
+      - name: postgres-config
+        configMap:
+          name: postgres-config
   volumeClaimTemplates:
   - metadata:
       name: data

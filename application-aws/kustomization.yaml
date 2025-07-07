@@ -11,6 +11,7 @@ resources:
   # PostgreSQL
   - postgres/postgres-deployment.yaml
   - postgres/postgres-service.yaml
+  - postgres/postgres-configmap.yaml
   
   # Neo4j with monitoring enabled
   - neo4j/neo4j-deployment.yaml

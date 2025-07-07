@@ -1,0 +1,59 @@
+# ========================================
+# 1. postgres/postgres-config.yaml (NUEVO ARCHIVO)
+# ========================================
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: postgres-config
+  namespace: torcal-ml
+data:
+  postgresql.conf: |
+    # Configuración de PostgreSQL optimizada para recursos disponibles (3Gi RAM)
+    
+    # Parámetros de conexión
+    listen_addresses = '*'
+    max_connections = 50              # Reducido para recursos limitados
+    superuser_reserved_connections = 3
+    
+    # Parámetros de memoria - Ajustado para 3Gi máximo
+    shared_buffers = 768MB            # 25% de 3Gi
+    work_mem = 16MB                   # Reducido para más conexiones
+    maintenance_work_mem = 96MB       # Reducido proporcionalmente
+    effective_cache_size = 2GB        # Estimación de caché disponible
+    
+    # Comportamiento de escritura
+    synchronous_commit = off          # Mejora rendimiento a costa de durabilidad
+    wal_buffers = 8MB                 # Reducido para recursos limitados
+    checkpoint_timeout = 10min        # Menos checkpoints = mejor rendimiento
+    max_wal_size = 512MB              # Reducido para menos espacio
+    min_wal_size = 64MB
+    
+    # Optimización de búsqueda
+    random_page_cost = 1.5            # Valor para SSD en la nube
+    effective_io_concurrency = 4      # Mayor para SSD
+    
+    # Timeouts y gestión de conexiones
+    tcp_keepalives_idle = 60          # Tiempo antes de verificar conexión
+    tcp_keepalives_interval = 10      # Intervalo de verificación
+    tcp_keepalives_count = 6          # Número de intentos
+    idle_in_transaction_session_timeout = 30000  # 30 segundos
+    statement_timeout = 60000         # 60 segundos
+    lock_timeout = 30000              # 30 segundos
+    
+    # Planificación de consultas
+    default_statistics_target = 100   # Estadísticas más precisas
+    
+    # Logging para diagnóstico
+    log_min_error_statement = 'error'
+    log_min_duration_statement = 2000 # Registrar consultas > 2s
+    log_connections = on
+    log_disconnections = on
+    log_line_prefix = '%t [%p]: [%l-1] user=%u,db=%d,app=%a,client=%h '
+    log_checkpoints = on
+    log_lock_waits = on
+    log_temp_files = 0
+    
+    # Ajustes de vacuum
+    autovacuum = on
+    autovacuum_max_workers = 2        # Reducido para menos recursos
+    autovacuum_naptime = 2min         # Más tiempo entre ejecuciones
