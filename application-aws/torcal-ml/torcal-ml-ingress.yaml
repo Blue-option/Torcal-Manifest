@@ -61,7 +61,7 @@ metadata:
 spec:
   ingressClassName: alb
   rules:
-  - host: minio.torcal-recommender.blueoption.net
+  - host: minio-api.torcal-recommender.blueoption.net
     http:
       paths:
       - path: /
