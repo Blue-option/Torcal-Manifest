@@ -40,13 +40,13 @@ spec:
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: minio-ingress2
+  name: minio-ingress
   namespace: torcal-ml
   annotations:
     alb.ingress.kubernetes.io/scheme: internet-facing
     alb.ingress.kubernetes.io/target-type: ip
     alb.ingress.kubernetes.io/group.name: torcal-shared-lb
-    alb.ingress.kubernetes.io/certificate-arn: "arn:aws:acm:eu-west-1:651857781455:certificate/9c429c17-e0d4-4e96-8af4-cf5e685cf1c4"
+    alb.ingress.kubernetes.io/certificate-arn: "arn:aws:acm:eu-west-1:651857781455:certificate/b0934fc0-a47e-4098-86b7-9b7babbb8108"
     
     # SSL Configuration
     alb.ingress.kubernetes.io/ssl-policy: "ELBSecurityPolicy-TLS-1-2-2017-01"
