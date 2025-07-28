@@ -4,7 +4,7 @@ metadata:
   name: postgres
   namespace: torcal-ml
 spec:
-  serviceName: "postgres-headless"
+  serviceName: "postgres"
   replicas: 1
   selector:
     matchLabels:
@@ -13,15 +13,27 @@ spec:
     metadata:
       labels:
         app: postgres
+        monitoring: enabled
     spec:
       serviceAccountName: postgres-sa
+      securityContext:
+        runAsUser: 999
+        runAsGroup: 999
+        fsGroup: 999
+        fsGroupChangePolicy: "OnRootMismatch"
       containers:
       - name: postgres
         image: postgres:15
+        securityContext:
+          runAsUser: 999
+          runAsGroup: 999
+          runAsNonRoot: true
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: false
         resources:
           limits:
-            memory: "1Gi"
-            cpu: "500m"
+            memory: "3Gi"
+            cpu: "1500m"
           requests:
             memory: "512Mi"
             cpu: "250m"
@@ -45,15 +57,59 @@ spec:
               key: database
         - name: PGDATA
           value: /var/lib/postgresql/data/pgdata
+        - name: POSTGRES_INITDB_ARGS
+          value: "--data-checksums"
+        # IMPORTANTE: Añadir configuración para preservar datos
+        - name: POSTGRES_HOST_AUTH_METHOD
+          value: "md5"
         volumeMounts:
         - name: data
           mountPath: /var/lib/postgresql/data
+        - name: postgres-config
+          mountPath: /etc/postgresql/postgresql.conf
+          subPath: postgresql.conf
+        # Mejorar health checks
+        livenessProbe:
+          exec:
+            command:
+            - /bin/bash
+            - -c
+            - pg_isready -U $POSTGRES_USER -d $POSTGRES_DB -h localhost
+          initialDelaySeconds: 60
+          periodSeconds: 30
+          timeoutSeconds: 10
+          failureThreshold: 3
+        readinessProbe:
+          exec:
+            command:
+            - /bin/bash
+            - -c
+            - pg_isready -U $POSTGRES_USER -d $POSTGRES_DB -h localhost
+          initialDelaySeconds: 15
+          periodSeconds: 10
+          timeoutSeconds: 5
+          failureThreshold: 3
+        # Añadir startup probe para inicialización lenta
+        startupProbe:
+          exec:
+            command:
+            - /bin/bash
+            - -c
+            - pg_isready -U $POSTGRES_USER -d $POSTGRES_DB -h localhost
+          initialDelaySeconds: 10
+          periodSeconds: 5
+          timeoutSeconds: 3
+          failureThreshold: 30
+      volumes:
+      - name: postgres-config
+        configMap:
+          name: postgres-config
   volumeClaimTemplates:
   - metadata:
       name: data
     spec:
-      accessModes: [ "ReadWriteOnce" ]
+      accessModes: ["ReadWriteOnce"]
       resources:
         requests:
           storage: 10Gi
-      storageClassName: standard
+      storageClassName: gp3
