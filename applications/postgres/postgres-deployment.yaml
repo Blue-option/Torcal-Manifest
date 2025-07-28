@@ -1,14 +1,12 @@
+# Solo actualizar el template del StatefulSet existente
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
   name: postgres
   namespace: torcal-ml
 spec:
-  serviceName: "postgres"
+  # No cambiar serviceName, selector, o volumeClaimTemplates
   replicas: 1
-  selector:
-    matchLabels:
-      app: postgres
   template:
     metadata:
       labels:
@@ -65,10 +63,17 @@ spec:
         volumeMounts:
         - name: data
           mountPath: /var/lib/postgresql/data
-        - name: postgres-config
-          mountPath: /etc/postgresql/postgresql.conf
-          subPath: postgresql.conf
-        # Mejorar health checks
+        # Health checks mejorados
+        startupProbe:
+          exec:
+            command:
+            - /bin/bash
+            - -c
+            - pg_isready -U $POSTGRES_USER -d $POSTGRES_DB -h localhost
+          initialDelaySeconds: 10
+          periodSeconds: 5
+          timeoutSeconds: 5
+          failureThreshold: 30
         livenessProbe:
           exec:
             command:
@@ -89,27 +94,3 @@ spec:
           periodSeconds: 10
           timeoutSeconds: 5
           failureThreshold: 3
-        # Añadir startup probe para inicialización lenta
-        startupProbe:
-          exec:
-            command:
-            - /bin/bash
-            - -c
-            - pg_isready -U $POSTGRES_USER -d $POSTGRES_DB -h localhost
-          initialDelaySeconds: 10
-          periodSeconds: 5
-          timeoutSeconds: 3
-          failureThreshold: 30
-      volumes:
-      - name: postgres-config
-        configMap:
-          name: postgres-config
-  volumeClaimTemplates:
-  - metadata:
-      name: data
-    spec:
-      accessModes: ["ReadWriteOnce"]
-      resources:
-        requests:
-          storage: 10Gi
-      storageClassName: gp3
