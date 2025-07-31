@@ -21,7 +21,7 @@ spec:
       serviceAccountName: torcal-ml-sa
       containers:
       - name: torcal-ml
-        image: 651857781455.dkr.ecr.eu-west-1.amazonaws.com/torcal-ml:latest@sha256:bb62198e4618b4d50d16b609951cacdb99e0610d71e5a6f08b1fbb100ef5dba8 
+        image: 651857781455.dkr.ecr.eu-west-1.amazonaws.com/torcal-ml:latest@sha256:2d2db8dbe91c68e462410d3f723dfe07ddd45c3ea2a8290a8c5b5f34735e6343
         volumeMounts:
         - name: env-config
           mountPath: /app/.env
