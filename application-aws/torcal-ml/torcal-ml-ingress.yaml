@@ -149,3 +149,79 @@ spec:
             name: torcal-ml-2
             port:
               number: 80
+---
+# Ingress para API - api.recommender.torcal.es
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: torcal-es-api-ingress
+  namespace: torcal-ml
+  annotations:
+    alb.ingress.kubernetes.io/scheme: internet-facing
+    alb.ingress.kubernetes.io/target-type: ip
+    alb.ingress.kubernetes.io/group.name: torcal-shared-lb
+    alb.ingress.kubernetes.io/group.order: '60'
+    alb.ingress.kubernetes.io/certificate-arn: "arn:aws:acm:eu-west-1:651857781455:certificate/47d3c0ba-7c5e-4c86-a90b-99d073925c7b"
+    
+    # SSL Configuration
+    alb.ingress.kubernetes.io/ssl-policy: "ELBSecurityPolicy-TLS-1-2-2017-01"
+    alb.ingress.kubernetes.io/listen-ports: '[{"HTTP": 80}, {"HTTPS": 443}]'
+    alb.ingress.kubernetes.io/ssl-redirect: '443'
+    
+    # Performance & Security
+    alb.ingress.kubernetes.io/load-balancer-attributes: |
+      idle_timeout.timeout_seconds=600,
+      routing.http2.enabled=true,
+      access_logs.s3.enabled=false
+spec:
+  ingressClassName: alb
+  rules:
+  - host: api.recommender.torcal.es
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: torcal-ml-2
+            port:
+              number: 80
+
+---
+
+# Ingress para MinIO - minio.recommender.torcal.es
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: torcal-es-minio-ingress
+  namespace: torcal-ml
+  annotations:
+    alb.ingress.kubernetes.io/scheme: internet-facing
+    alb.ingress.kubernetes.io/target-type: ip
+    alb.ingress.kubernetes.io/group.name: torcal-shared-lb
+    alb.ingress.kubernetes.io/group.order: '61'
+    alb.ingress.kubernetes.io/certificate-arn: "arn:aws:acm:eu-west-1:651857781455:certificate/09a72c20-6969-40cf-905d-983f1b534c6c"
+    
+    # SSL Configuration
+    alb.ingress.kubernetes.io/ssl-policy: "ELBSecurityPolicy-TLS-1-2-2017-01"
+    alb.ingress.kubernetes.io/listen-ports: '[{"HTTP": 80}, {"HTTPS": 443}]'
+    alb.ingress.kubernetes.io/ssl-redirect: '443'
+    
+    # Performance & Security
+    alb.ingress.kubernetes.io/load-balancer-attributes: |
+      idle_timeout.timeout_seconds=600,
+      routing.http2.enabled=true,
+      access_logs.s3.enabled=false
+spec:
+  ingressClassName: alb
+  rules:
+  - host: minio.recommender.torcal.es
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: minio
+            port:
+              number: 9001  # Puerto de la consola de MinIO
