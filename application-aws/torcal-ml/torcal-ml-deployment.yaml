@@ -20,96 +20,96 @@ spec:
     spec:
       serviceAccountName: torcal-ml-sa
       containers:
-      - name: torcal-ml
-        image: 651857781455.dkr.ecr.eu-west-1.amazonaws.com/torcal-ml:latest@sha256:6e28e419d0dec666407cd3f571a598ebc850432058e84b5b4bb91a89ea44c2ad
-        volumeMounts:
-        - name: env-config
-          mountPath: /app/.env
-          subPath: .env
-        resources:
-          limits:
-            memory: "16Gi"
-            cpu: "6000m"
-          requests:
-            memory: "12Gi"
-            cpu: "4000m"
-        ports:
-        - containerPort: 8000
-          name: http
-        - containerPort: 8001
-          name: metrics
-        env:
-        - name: OLLAMA_URL
-          value: "http://ollama:11434"
-        - name: MODELO_TAXONOMIA
-          value: gemma3:4b
-        - name: POSTGRES_HOST
-          value: "postgres"
-        - name: POSTGRES_PORT
-          value: "5432"
-        - name: POSTGRES_USER
-          valueFrom:
-            secretKeyRef:
-              name: postgres-secret
-              key: username
-        - name: POSTGRES_PASSWORD
-          valueFrom:
-            secretKeyRef:
-              name: postgres-secret
-              key: password
-        - name: POSTGRES_DB
-          valueFrom:
-            secretKeyRef:
-              name: postgres-secret
-              key: database
-        - name: NEO4J_URI
-          value: "bolt://neo4j:7687"
-        - name: NEO4J_USER
-          valueFrom:
-            secretKeyRef:
-              name: neo4j-secret
-              key: username
-        - name: NEO4J_PASSWORD
-          valueFrom:
-            secretKeyRef:
-              name: neo4j-secret
-              key: password
-        - name: MINIO_ENDPOINT
-          value: "minio:9000"
-        - name: MINIO_ACCESS_KEY
-          valueFrom:
-            secretKeyRef:
-              name: minio-secret
-              key: root-user
-        - name: MINIO_SECRET_KEY
-          valueFrom:
-            secretKeyRef:
-              name: minio-secret
-              key: root-password
-        - name: MINIO_USE_SSL
-          value: "false"
-        - name: MINIO_BUCKET
-          value: "torcal-models"
-        - name: MINIO_DATA_BUCKET
-          value: "torcal-data"
-        # Enable metrics
-        - name: ENABLE_METRICS
-          value: "true"
-        - name: METRICS_PORT
-          value: "8001"
-        readinessProbe:
-          httpGet:
-            path: /docs
-            port: 8000
-          initialDelaySeconds: 15
-          periodSeconds: 10
-        livenessProbe:
-          httpGet:
-            path: /docs
-            port: 8000
-          initialDelaySeconds: 30
-          periodSeconds: 20
+        - name: torcal-ml
+          image: 651857781455.dkr.ecr.eu-west-1.amazonaws.com/torcal-ml:latest@sha256:5693fb13965b5b1c91c8ed414a66f618f14972d390bef8487c03406c21418e1a
+          volumeMounts:
+            - name: env-config
+              mountPath: /app/.env
+              subPath: .env
+          resources:
+            limits:
+              memory: "16Gi"
+              cpu: "6000m"
+            requests:
+              memory: "12Gi"
+              cpu: "4000m"
+          ports:
+            - containerPort: 8000
+              name: http
+            - containerPort: 8001
+              name: metrics
+          env:
+            - name: OLLAMA_URL
+              value: "http://ollama:11434"
+            - name: MODELO_TAXONOMIA
+              value: gemma3:4b
+            - name: POSTGRES_HOST
+              value: "postgres"
+            - name: POSTGRES_PORT
+              value: "5432"
+            - name: POSTGRES_USER
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-secret
+                  key: username
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-secret
+                  key: password
+            - name: POSTGRES_DB
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-secret
+                  key: database
+            - name: NEO4J_URI
+              value: "bolt://neo4j:7687"
+            - name: NEO4J_USER
+              valueFrom:
+                secretKeyRef:
+                  name: neo4j-secret
+                  key: username
+            - name: NEO4J_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: neo4j-secret
+                  key: password
+            - name: MINIO_ENDPOINT
+              value: "minio:9000"
+            - name: MINIO_ACCESS_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: minio-secret
+                  key: root-user
+            - name: MINIO_SECRET_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: minio-secret
+                  key: root-password
+            - name: MINIO_USE_SSL
+              value: "false"
+            - name: MINIO_BUCKET
+              value: "torcal-models"
+            - name: MINIO_DATA_BUCKET
+              value: "torcal-data"
+            # Enable metrics
+            - name: ENABLE_METRICS
+              value: "true"
+            - name: METRICS_PORT
+              value: "8001"
+          readinessProbe:
+            httpGet:
+              path: /docs
+              port: 8000
+            initialDelaySeconds: 15
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /docs
+              port: 8000
+            initialDelaySeconds: 30
+            periodSeconds: 20
       volumes:
-      - name: env-config
-        configMap:
-          name: torcal-ml-env-config
+        - name: env-config
+          configMap:
+            name: torcal-ml-env-config
