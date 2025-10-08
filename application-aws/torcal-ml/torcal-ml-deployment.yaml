@@ -7,7 +7,12 @@ spec:
   selector:
     matchLabels:
       app: torcal-ml
-  replicas: 1
+  replicas: 2
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:  
+      maxUnavailable: 1
+      maxSurge: 0
   template:
     metadata:
       labels:
@@ -28,11 +33,11 @@ spec:
               subPath: .env
           resources:
             limits:
-              memory: "16Gi"
-              cpu: "6000m"
-            requests:
               memory: "12Gi"
-              cpu: "4000m"
+              cpu: "3000m"
+            requests:
+              memory: "8Gi"
+              cpu: "2000m"
           ports:
             - containerPort: 8000
               name: http
