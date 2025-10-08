@@ -26,10 +26,10 @@ spec:
         resources:
           limits:
             memory: "12Gi"
-            cpu: "3000m"
+            cpu: "6000m"
           requests:
             memory: "8Gi"
-            cpu: "2000m"
+            cpu: "4000m"
         ports:
         - containerPort: 8000
         env:
