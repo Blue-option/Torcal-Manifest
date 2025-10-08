@@ -7,7 +7,9 @@ spec:
   selector:
     matchLabels:
       app: torcal-ml
-  replicas: 1
+  replicas: 2
+  strategy:
+    type: Recreate
   template:
     metadata:
       labels:
@@ -23,11 +25,11 @@ spec:
           subPath: .env
         resources:
           limits:
-            memory: "24Gi"
-            cpu: "6000m"
+            memory: "12Gi"
+            cpu: "3000m"
           requests:
-            memory: "16Gi"
-            cpu: "4000m"
+            memory: "8Gi"
+            cpu: "2000"
         ports:
         - containerPort: 8000
         env:
