@@ -10,7 +10,7 @@ spec:
   replicas: 2
   strategy:
   type: RollingUpdate
-  rollingUpdate:  
+  rollingUpdate:
     maxUnavailable: 1
     maxSurge: 0
   template:
@@ -26,7 +26,7 @@ spec:
       serviceAccountName: torcal-ml-sa
       containers:
         - name: torcal-ml
-          image: 651857781455.dkr.ecr.eu-west-1.amazonaws.com/torcal-ml:latest@sha256:72180789f6cc95a1d91e1a93ecb6036c33cf5afc321430891868e6f8ea403b75
+          image: 651857781455.dkr.ecr.eu-west-1.amazonaws.com/torcal-ml:latest@sha256:b9d77f3875f079d172dad9129248939705c0a1cfb8ca0f1c19950bfb93189a1f
           volumeMounts:
             - name: env-config
               mountPath: /app/.env
