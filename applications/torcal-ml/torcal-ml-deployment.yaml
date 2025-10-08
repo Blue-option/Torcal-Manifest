@@ -10,9 +10,7 @@ spec:
   replicas: 2
   strategy:
     type: RollingUpdate
-    RollingUpdate:
-      maxUnavailable: 1
-      maxSurge: 0
+    
   template:
     metadata:
       labels:
@@ -29,10 +27,10 @@ spec:
         resources:
           limits:
             memory: "12Gi"
-            cpu: "3000m"
+            cpu: "6000m"
           requests:
-            memory: "8Gi"
-            cpu: "2000m"
+            memory: "16Gi"
+            cpu: "4000m"
         ports:
         - containerPort: 8000
         env:
