@@ -8,11 +8,11 @@ spec:
     matchLabels:
       app: torcal-ml
   replicas: 2
-   strategy:
-    type: RollingUpdate
-    rollingUpdate:  
-      maxUnavailable: 1
-      maxSurge: 0
+  strategy:
+  type: RollingUpdate
+  rollingUpdate:  
+    maxUnavailable: 1
+    maxSurge: 0
   template:
     metadata:
       labels:
