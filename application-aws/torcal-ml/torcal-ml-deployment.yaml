@@ -9,10 +9,10 @@ spec:
       app: torcal-ml
   replicas: 3
   strategy:
-  type: RollingUpdate
-  rollingUpdate:  
-    maxUnavailable: 1
-    maxSurge: 0
+    type: RollingUpdate
+    rollingUpdate:  
+      maxUnavailable: 1
+      maxSurge: 0
   template:
     metadata:
       labels:
@@ -33,10 +33,10 @@ spec:
               subPath: .env
           resources:
             limits:
-              memory: "8Gi"
+              memory: "7Gi"
               cpu: "2000m"
             requests:
-              memory: "6Gi"
+              memory: "7Gi"
               cpu: "2000m"
           ports:
             - containerPort: 8000
