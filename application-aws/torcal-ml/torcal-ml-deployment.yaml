@@ -33,11 +33,11 @@ spec:
               subPath: .env
           resources:
             limits:
-              memory: "7Gi"
+              memory: "8Gi"
               cpu: "2000m"
             requests:
-              memory: "7Gi"
-              cpu: "2000m"
+              memory: "6Gi"
+              cpu: "1500m"
           ports:
             - containerPort: 8000
               name: http
