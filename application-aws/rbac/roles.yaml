@@ -12,6 +12,11 @@ rules:
   resources: ["secrets"]
   verbs: ["get"]
   resourceNames: ["postgres-secret", "neo4j-secret", "api-tokens"]
+# GPU on-demand: permitir a torcal-ml escalar SOLO el Deployment de Ollama
+- apiGroups: ["apps"]
+  resources: ["deployments/scale"]
+  verbs: ["get", "patch", "update"]
+  resourceNames: ["ollama"]
 
 --- 
 apiVersion: rbac.authorization.k8s.io/v1

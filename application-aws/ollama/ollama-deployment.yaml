@@ -4,7 +4,9 @@ metadata:
   name: ollama
   namespace: torcal-ml
 spec:
-  replicas: 1
+  # GPU on-demand: por defecto 0. La app sube Ollama a 1 al entrenar (semántica) y
+  # lo baja a 0 al terminar; el cluster-autoscaler levanta/retira el nodo GPU.
+  replicas: 0
   selector:
     matchLabels:
       app: ollama
@@ -25,7 +27,7 @@ spec:
         fsGroup: 1000
         seccompProfile:
           type: RuntimeDefault
-      terminationGracePeriodSeconds: 1800
+      terminationGracePeriodSeconds: 30
       containers:
       - name: ollama
         image: ollama/ollama:0.6.6

@@ -30,8 +30,9 @@ resources:
   - ollama/ollama-service.yaml
   - ollama/ollama-pvc.yaml
   
-  # KEDA Scaler (descomenta si lo necesitas)
-  - keda-scaler/ollama-scaler.yaml
+  # KEDA Scaler: DESACTIVADO. La app escala Ollama on-demand directamente vía API de
+  # Kubernetes (sin Kafka). El ScaledObject kafka quedaba inerte (KEDA READY=False).
+  #- keda-scaler/ollama-scaler.yaml
   
   # RBAC
   - rbac/roles.yaml
