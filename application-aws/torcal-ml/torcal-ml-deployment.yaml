@@ -51,6 +51,8 @@ spec:
             # GPU on-demand: la app sube/baja el Deployment de Ollama al entrenar (sin Kafka)
             - name: GPU_AUTOSCALE
               value: "true"
+            - name: GUNICORN_TIMEOUT
+              value: "28800"
             - name: POSTGRES_HOST
               value: "postgres"
             - name: POSTGRES_PORT
