@@ -6,7 +6,7 @@ metadata:
   namespace: torcal-ml
 rules:
 - apiGroups: [""]
-  resources: ["pods", "services", "configmaps"]
+  resources: ["pods", "services", "configmaps", "events"]
   verbs: ["get", "list", "watch"]
 - apiGroups: [""]
   resources: ["secrets"]
