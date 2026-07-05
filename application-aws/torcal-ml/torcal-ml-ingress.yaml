@@ -7,6 +7,8 @@ metadata:
   annotations:
     alb.ingress.kubernetes.io/scheme: internet-facing
     alb.ingress.kubernetes.io/target-type: ip
+    # Whitelist de IPs (2026-07-05): el ALB compartido solo admite estas IPs de origen.
+    alb.ingress.kubernetes.io/inbound-cidrs: "92.172.131.110/32"
     alb.ingress.kubernetes.io/group.name: torcal-shared-lb
     alb.ingress.kubernetes.io/certificate-arn: "arn:aws:acm:eu-west-1:651857781455:certificate/9c429c17-e0d4-4e96-8af4-cf5e685cf1c4"
     
@@ -45,6 +47,8 @@ metadata:
   annotations:
     alb.ingress.kubernetes.io/scheme: internet-facing
     alb.ingress.kubernetes.io/target-type: ip
+    # Whitelist de IPs (2026-07-05): el ALB compartido solo admite estas IPs de origen.
+    alb.ingress.kubernetes.io/inbound-cidrs: "92.172.131.110/32"
     alb.ingress.kubernetes.io/group.name: torcal-shared-lb
     alb.ingress.kubernetes.io/certificate-arn: "arn:aws:acm:eu-west-1:651857781455:certificate/b0934fc0-a47e-4098-86b7-9b7babbb8108"
     
@@ -82,6 +86,8 @@ metadata:
   annotations:
     alb.ingress.kubernetes.io/scheme: internet-facing
     alb.ingress.kubernetes.io/target-type: ip
+    # Whitelist de IPs (2026-07-05): el ALB compartido solo admite estas IPs de origen.
+    alb.ingress.kubernetes.io/inbound-cidrs: "92.172.131.110/32"
     # ✨ MISMO GRUPO = MISMO ALB
     alb.ingress.kubernetes.io/group.name: torcal-shared-lb
     alb.ingress.kubernetes.io/group.order: '20'
@@ -121,6 +127,8 @@ metadata:
   annotations:
     alb.ingress.kubernetes.io/scheme: internet-facing
     alb.ingress.kubernetes.io/target-type: ip
+    # Whitelist de IPs (2026-07-05): el ALB compartido solo admite estas IPs de origen.
+    alb.ingress.kubernetes.io/inbound-cidrs: "92.172.131.110/32"
     # ✨ MISMO GRUPO = MISMO ALB
     alb.ingress.kubernetes.io/group.name: torcal-shared-lb
     alb.ingress.kubernetes.io/group.order: '20'
@@ -159,6 +167,8 @@ metadata:
   annotations:
     alb.ingress.kubernetes.io/scheme: internet-facing
     alb.ingress.kubernetes.io/target-type: ip
+    # Whitelist de IPs (2026-07-05): el ALB compartido solo admite estas IPs de origen.
+    alb.ingress.kubernetes.io/inbound-cidrs: "92.172.131.110/32"
     alb.ingress.kubernetes.io/group.name: torcal-shared-lb
     alb.ingress.kubernetes.io/group.order: '60'
     alb.ingress.kubernetes.io/certificate-arn: "arn:aws:acm:eu-west-1:651857781455:certificate/47d3c0ba-7c5e-4c86-a90b-99d073925c7b"
@@ -198,6 +208,8 @@ metadata:
   annotations:
     alb.ingress.kubernetes.io/scheme: internet-facing
     alb.ingress.kubernetes.io/target-type: ip
+    # Whitelist de IPs (2026-07-05): el ALB compartido solo admite estas IPs de origen.
+    alb.ingress.kubernetes.io/inbound-cidrs: "92.172.131.110/32"
     alb.ingress.kubernetes.io/group.name: torcal-shared-lb
     alb.ingress.kubernetes.io/group.order: '61'
     alb.ingress.kubernetes.io/certificate-arn: "arn:aws:acm:eu-west-1:651857781455:certificate/09a72c20-6969-40cf-905d-983f1b534c6c"
