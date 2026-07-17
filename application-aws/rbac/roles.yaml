@@ -17,6 +17,14 @@ rules:
   resources: ["deployments/scale"]
   verbs: ["get", "patch", "update"]
   resourceNames: ["ollama"]
+# Entreno como Job: la app crea/observa/borra el Job de entrenamiento del grafo
+- apiGroups: ["batch"]
+  resources: ["jobs"]
+  verbs: ["create", "get", "list", "watch", "delete"]
+# Leer los logs de los pods del Job de entreno (observabilidad)
+- apiGroups: [""]
+  resources: ["pods/log"]
+  verbs: ["get"]
 
 --- 
 apiVersion: rbac.authorization.k8s.io/v1
