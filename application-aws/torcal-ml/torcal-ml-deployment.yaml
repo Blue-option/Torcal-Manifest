@@ -26,7 +26,7 @@ spec:
       serviceAccountName: torcal-ml-sa
       containers:
         - name: torcal-ml
-          image: 651857781455.dkr.ecr.eu-west-1.amazonaws.com/torcal-ml:jobtrain-2136271@sha256:407c8060448c6c746ee8f7bc81038aeea3a440c47b81fd83859aa4280a6dcf14
+          image: 651857781455.dkr.ecr.eu-west-1.amazonaws.com/torcal-ml:dqnjob-31fb8b2@sha256:7b5e944ddd21d82435aefef29fedaa55bda0ea897b6a8126fe8b4f98dabcd42d
           volumeMounts:
             - name: env-config
               mountPath: /app/.env
@@ -60,7 +60,7 @@ spec:
             - name: TRAIN_REQUIRE_JOB
               value: "true"
             - name: TRAIN_JOB_IMAGE
-              value: "651857781455.dkr.ecr.eu-west-1.amazonaws.com/torcal-ml:jobtrain-2136271@sha256:407c8060448c6c746ee8f7bc81038aeea3a440c47b81fd83859aa4280a6dcf14"
+              value: "651857781455.dkr.ecr.eu-west-1.amazonaws.com/torcal-ml:dqnjob-31fb8b2@sha256:7b5e944ddd21d82435aefef29fedaa55bda0ea897b6a8126fe8b4f98dabcd42d"
             - name: GUNICORN_TIMEOUT
               value: "28800"
             - name: POSTGRES_HOST
